@@ -33,20 +33,8 @@ endif()
 FetchContent_Declare(
         catch2
         GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-        GIT_TAG        v2.11.1
+        GIT_TAG v2.x
 )
-
-FetchContent_Declare(
-        gflags
-        GIT_REPOSITORY https://github.com/gflags/gflags.git
-        GIT_TAG v2.2.2
-)
-
-FetchContent_GetProperties(gflags)
-if(NOT gflags_POPULATED)
-    FetchContent_Populate(gflags)
-    add_subdirectory(${gflags_SOURCE_DIR} ${gflags_BINARY_DIR})
-endif()
 
 # Adds Catch2 testing library
 FetchContent_GetProperties(catch2)
@@ -56,29 +44,71 @@ if(NOT catch2_POPULATED)
     target_include_directories(catch2 INTERFACE ${catch2_SOURCE_DIR}/single_include)
 endif()
 
+FetchContent_Declare(
+        cpr
+        GIT_REPOSITORY https://github.com/whoshuu/cpr.git
+        GIT_TAG 1.6.0
+)
+
+# Adds cpr HTTP library
+FetchContent_GetProperties(cpr)
+if(NOT cpr_POPULATED)
+    FetchContent_Populate(cpr)
+    add_library(cpr INTERFACE)
+    target_include_directories(cpr INTERFACE ${cpr_SOURCE_DIR}/single_include)
+endif()
+
+FetchContent_Declare(
+        curl
+        GIT_REPOSITORY https://github.com/curl/curl.git
+        GIT_TAG curl-7_76_1
+)
+
+# Adds curl HTTP library
+FetchContent_GetProperties(curl)
+if(NOT curl_POPULATED)
+    FetchContent_Populate(curl)
+    add_library(curl INTERFACE)
+    target_include_directories(curl INTERFACE ${curl_SOURCE_DIR}/single_include)
+endif()
+
+FetchContent_Declare(
+        json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG v3.9.1
+)
+
+# Adds json parsing library
+FetchContent_GetProperties(json)
+if(NOT json_POPULATED)
+    FetchContent_Populate(json)
+    add_library(json INTERFACE)
+    target_include_directories(json INTERFACE ${json_SOURCE_DIR}/single_include)
+endif()
+
+
 get_filename_component(CINDER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../" ABSOLUTE)
 get_filename_component(APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/" ABSOLUTE)
 
 include("${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake")
 
-list(APPEND CORE_SOURCE_FILES)
+list(APPEND SOURCE_FILES    game_data/engine_data.cpp)
 
-list(APPEND SOURCE_FILES    ${CORE_SOURCE_FILES})
-
-list(APPEND TEST_FILES tests/pokemon_data_tests.cpp)
-
-add_executable(calculate_input game_data/engine_data.cpp ${CORE_SOURCE_FILES})
-target_include_directories(calculate_input PRIVATE include)
+list(APPEND TEST_FILES tests/battle_math_tests.cpp
+        tests/data_retrieval_tests.cpp
+        tests/pokemon_data_tests.cpp
+        tests/strategy_output_tests.cpp)
 
 ci_make_app(
-        APP_NAME        sketchpad-classifier
+        APP_NAME        pokemon-engine-run
         CINDER_PATH     ${CINDER_PATH}
         SOURCES         pokemon_engine_main/pokemon_engine_main.cpp ${SOURCE_FILES}
         INCLUDES        include
+
 )
 
 ci_make_app(
-        APP_NAME        pokemon_engine_test
+        APP_NAME        pokemon-engine-test
         CINDER_PATH     ${CINDER_PATH}
         SOURCES         tests/test_main.cc ${SOURCE_FILES} ${TEST_FILES}
         INCLUDES        include
@@ -86,5 +116,5 @@ ci_make_app(
 )
 
 if(MSVC)
-    set_property(TARGET pokemon_engine_test APPEND_STRING PROPERTY LINK_FLAGS " /SUBSYSTEM:CONSOLE")
+    set_property(TARGET pokemon-engine-test APPEND_STRING PROPERTY LINK_FLAGS " /SUBSYSTEM:CONSOLE")
 endif()
