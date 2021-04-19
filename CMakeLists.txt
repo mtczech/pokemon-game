@@ -92,7 +92,9 @@ get_filename_component(APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/" ABSOLUTE)
 
 include("${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake")
 
-list(APPEND SOURCE_FILES    game_data/engine_data.cpp)
+list(APPEND SOURCE_FILES    game_data/engine_data.cpp
+        game_data/engine_data.h
+        pokemon_engine_interface/pokemon_engine_interface.cpp)
 
 list(APPEND TEST_FILES tests/battle_math_tests.cpp
         tests/data_retrieval_tests.cpp
@@ -102,9 +104,9 @@ list(APPEND TEST_FILES tests/battle_math_tests.cpp
 ci_make_app(
         APP_NAME        pokemon-engine-run
         CINDER_PATH     ${CINDER_PATH}
-        SOURCES         pokemon_engine_main/pokemon_engine_main.cpp ${SOURCE_FILES}
+        SOURCES         main/engine_main.cpp ${SOURCE_FILES}
         INCLUDES        include
-
+        LIBRARIES       json
 )
 
 ci_make_app(
@@ -112,7 +114,7 @@ ci_make_app(
         CINDER_PATH     ${CINDER_PATH}
         SOURCES         tests/test_main.cc ${SOURCE_FILES} ${TEST_FILES}
         INCLUDES        include
-        LIBRARIES       catch2
+        LIBRARIES       catch2 json
 )
 
 if(MSVC)

@@ -3,3 +3,6 @@
 //
 
 #include "engine_data.h"
+
+EngineData::EngineData() {
+}
