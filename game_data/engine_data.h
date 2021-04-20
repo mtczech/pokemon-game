@@ -3,8 +3,15 @@
 
 #endif FINAL_PROJECT_MTCZECH_ENGINE_DATA_H
 
+#include <nlohmann/json.hpp>
+#include <C:\Cinder\cinder_0.9.2_vc2015\cinder_0.9.2_vc2015\my-projects\final-project-mtczech\httplib\httplib.h>
+
 class EngineData {
  public:
-  //Constructor
-  EngineData::EngineData();
+  EngineData();
+
+  void EngineData::GetData(std::string pokemon);
+
+ private:
+
 };

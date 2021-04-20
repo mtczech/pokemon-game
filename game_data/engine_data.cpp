@@ -4,5 +4,7 @@
 
 #include "engine_data.h"
 
-EngineData::EngineData() {
+EngineData::EngineData() {}
+
+void EngineData::GetData(std::string pokemon) {
 }

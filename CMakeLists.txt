@@ -33,7 +33,7 @@ endif()
 FetchContent_Declare(
         catch2
         GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-        GIT_TAG v2.x
+        GIT_TAG v2.13.6
 )
 
 # Adds Catch2 testing library
@@ -42,34 +42,6 @@ if(NOT catch2_POPULATED)
     FetchContent_Populate(catch2)
     add_library(catch2 INTERFACE)
     target_include_directories(catch2 INTERFACE ${catch2_SOURCE_DIR}/single_include)
-endif()
-
-FetchContent_Declare(
-        cpr
-        GIT_REPOSITORY https://github.com/whoshuu/cpr.git
-        GIT_TAG 1.6.0
-)
-
-# Adds cpr HTTP library
-FetchContent_GetProperties(cpr)
-if(NOT cpr_POPULATED)
-    FetchContent_Populate(cpr)
-    add_library(cpr INTERFACE)
-    target_include_directories(cpr INTERFACE ${cpr_SOURCE_DIR}/single_include)
-endif()
-
-FetchContent_Declare(
-        curl
-        GIT_REPOSITORY https://github.com/curl/curl.git
-        GIT_TAG curl-7_76_1
-)
-
-# Adds curl HTTP library
-FetchContent_GetProperties(curl)
-if(NOT curl_POPULATED)
-    FetchContent_Populate(curl)
-    add_library(curl INTERFACE)
-    target_include_directories(curl INTERFACE ${curl_SOURCE_DIR}/single_include)
 endif()
 
 FetchContent_Declare(
@@ -92,9 +64,10 @@ get_filename_component(APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/" ABSOLUTE)
 
 include("${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake")
 
+list(APPEND CORE_SOURCE_FILES httplib/httplib.h)
+
 list(APPEND SOURCE_FILES    game_data/engine_data.cpp
-        game_data/engine_data.h
-        pokemon_engine_interface/pokemon_engine_interface.cpp)
+        pokemon_engine_interface/pokemon_engine_interface.cpp ${CORE_SOURCE_FILES})
 
 list(APPEND TEST_FILES tests/battle_math_tests.cpp
         tests/data_retrieval_tests.cpp
@@ -109,6 +82,8 @@ ci_make_app(
         LIBRARIES       json
 )
 
+target_link_libraries(pokemon-engine-run json)
+
 ci_make_app(
         APP_NAME        pokemon-engine-test
         CINDER_PATH     ${CINDER_PATH}
@@ -116,6 +91,8 @@ ci_make_app(
         INCLUDES        include
         LIBRARIES       catch2 json
 )
+
+target_link_libraries(pokemon-engine-test catch2 json)
 
 if(MSVC)
     set_property(TARGET pokemon-engine-test APPEND_STRING PROPERTY LINK_FLAGS " /SUBSYSTEM:CONSOLE")
