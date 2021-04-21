@@ -9,6 +9,7 @@ using nlohmann::json;
 namespace pokemon_move {
 
 pokemon_move::Move::Move() {
+  
 }
 
 void pokemon_move::Move::to_json(json& j, const pokemon_move::Move& p) {
