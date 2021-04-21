@@ -64,10 +64,11 @@ get_filename_component(APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/" ABSOLUTE)
 
 include("${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake")
 
-list(APPEND CORE_SOURCE_FILES httplib/httplib.h)
+list(APPEND CORE_SOURCE_FILES)
 
 list(APPEND SOURCE_FILES    game_data/engine_data.cpp
-        pokemon_engine_interface/pokemon_engine_interface.cpp ${CORE_SOURCE_FILES})
+        pokemon_engine_interface/pokemon_engine_interface.cpp
+        data_classes/move.cpp ${CORE_SOURCE_FILES})
 
 list(APPEND TEST_FILES tests/battle_math_tests.cpp
         tests/data_retrieval_tests.cpp

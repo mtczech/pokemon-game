@@ -19,7 +19,7 @@
 namespace pokemon_interface {
 
 /**
- * An app for visualizing the behavior of an ideal gas.
+ *
  */
 class PokemonEngineInterface : public ci::app::App {
  public:
@@ -33,7 +33,7 @@ class PokemonEngineInterface : public ci::app::App {
   const int kMargin = 100;
 
  private:
-  EngineData engine_data_;
+  pokemon_move::EngineData engine_data_;
 };
 
 }  // namespace pokemon_interface
