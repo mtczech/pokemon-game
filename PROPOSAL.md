@@ -30,3 +30,7 @@ to beat a human player using Pokemon that may be stronger than theirs, but not b
 There are many varied aspects to the Pokemon game, such as multi-hit moves, held items,
 and Dynamax forms, among other things. I will use Week 3 to account for these variables, 
 as well as testing out my program against human opponents.
+
+Update: Things aren't going as well as I thought they would be going, I cannot get data from
+the Internet, so I took all the JSON data I need and directly put it into my project. As of right now,
+my plan is to create a Pokemon game that the user can play against the computer. 

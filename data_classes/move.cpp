@@ -47,10 +47,15 @@ void pokemon_move::Move::from_json(const json& j, pokemon_move::Move& move, size
     j.at("moves").at(index).at("meta")["stat_chance"].get_to(move.stat_chance_);
   }
   if (j.at("moves").at(index).at("stat_changes") != nullptr &&
-      j.at("moves").at(index).at("stat_changes") != ""
-      && j.at("moves").at(index).at("stat_changes").size() != 0) {
-    j.at("moves").at(index).at("stat_changes").at(0).at("stat")["name"].get_to(move.stat_);
-    j.at("moves").at(index).at("stat_changes").at(0).at("change").get_to(move.change_);
+      j.at("moves").at(index).at("stat_changes").size() != 0) {
+    std::vector<std::string> stats_changed;
+    std::vector<int> amount_changed;
+    for (auto& change : j.at("moves").at(index).at("stat_changes")) {
+      stats_changed.push_back(j.at("moves").at(index).at("stat_changes").at(0).at("stat")["name"]);
+      amount_changed.push_back(j.at("moves").at(index).at("stat_changes").at(0).at("change"));
+    }
+    stat_ = stats_changed;
+    change_ = amount_changed;
   }
   j.at("moves").at(index).at("type")["name"].get_to(move.type_);
 }

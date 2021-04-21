@@ -53,9 +53,9 @@ class Move {
 
   size_t stat_chance_;
 
-  std::string stat_;
+  std::vector<std::string> stat_;
 
-  int change_;
+  std::vector<int> change_;
 
   std::string type_;
 };
