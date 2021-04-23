@@ -32,7 +32,22 @@ EngineData::EngineData(std::string move_json_path, std::string species_json_path
     species.from_json(pokemon, species);
     all_pokemon_list.push_back(species);
   }
+  std::ifstream set_file_input(set_json_path);
+  json pokemon_set_json;
+  set_file_input >> pokemon_set_json;
+  for (auto& set : pokemon_set_json.at("pokemon_sets")) {
+    for (pokemon_species::Species& p : all_pokemon_list) {
+      if (p.species_name_ == set.at("pokemon_name")) {
+        for (auto& move_name : set.at("moves")) {
+          p.moves_.push_back(FindMove(move_name.at("name")));
+        }
+      }
+    }
+  }
 }
+
+//n^4 complexity, glad my input sets are relatively small
+//There is a better way, I'm sure
 
 std::vector<pokemon_species::Species> EngineData::GetAllPokemonList() {
   return all_pokemon_list;
@@ -40,4 +55,14 @@ std::vector<pokemon_species::Species> EngineData::GetAllPokemonList() {
 
 std::vector<pokemon_move::Move> EngineData::GetMoves() {
   return moves;
+}
+
+pokemon_move::Move EngineData::FindMove(const std::string move_name) {
+  for (pokemon_move::Move& m : moves) {
+    if (m.name_ == move_name) {
+      return m;
+    }
+  }
+  //The program should not get to here, throw exception
+  throw "Program should not get to here";
 }
