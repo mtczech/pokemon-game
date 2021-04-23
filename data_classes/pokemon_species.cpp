@@ -42,8 +42,7 @@ void pokemon_species::Species::from_json(const nlohmann::json &j,
   for (auto& type : j.at("types")) {
     types_.push_back(type.at("type").at("name"));
   }
-  front_sprite_ = "C:/Cinder/cinder_0.9.2_vc2015/cinder_0.9.2_vc2015/my-projects/final-project-mtczech/pokemon_images/"
-                      + species_name_ + ".png";
+  front_sprite_ = j.at("sprites").at("front_default");
 }
 
 }

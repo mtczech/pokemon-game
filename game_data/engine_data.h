@@ -24,7 +24,7 @@ class EngineData {
   std::vector<pokemon_move::Move> EngineData::GetMoves();
 
   std::vector<pokemon_species::Species> EngineData::GetAllPokemonList();
-  
+
   /**
    * Function for finding a move given its name
    * @param move_name The name of the move being searched for
