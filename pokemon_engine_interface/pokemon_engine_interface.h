@@ -25,6 +25,8 @@ class PokemonEngineInterface : public ci::app::App {
  public:
   PokemonEngineInterface();
 
+  PokemonEngineInterface(EngineData engineData);
+
   void draw() override;
   void update() override;
 
@@ -33,7 +35,7 @@ class PokemonEngineInterface : public ci::app::App {
   const int kMargin = 100;
 
  private:
-  pokemon_move::EngineData engine_data_;
+  EngineData engine_data_;
 };
 
 }  // namespace pokemon_interface

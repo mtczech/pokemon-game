@@ -25,7 +25,9 @@ class Move {
 
   std::string name_;
 
-  size_t accuracy_ = 100;
+  //Accuracy is highest possible value because by default an attack always hits
+
+  size_t accuracy_ = SIZE_MAX;
 
   int effect_chance_ = 0;
 
@@ -35,27 +37,27 @@ class Move {
 
   std::string damage_class_name_;
 
-  std::string ailment_name_;
+  std::string ailment_name_ = "none";
 
   std::string category_name_;
 
-  size_t ailment_chance_;
+  size_t ailment_chance_ = 0;
 
-  size_t min_hits_;
+  size_t min_hits_ = 1;
 
-  size_t max_hits_;
+  size_t max_hits_ = 1;
 
-  int drain_;
+  int drain_ = 0;
 
-  size_t healing_;
+  size_t healing_ = 0;
 
-  size_t flinch_chance_;
+  size_t flinch_chance_ = 0;
 
-  size_t stat_chance_;
+  size_t stat_chance_ = 0;
 
-  std::vector<std::string> stat_;
+  std::vector<std::string> stat_ = std::vector<std::string>();
 
-  std::vector<int> change_;
+  std::vector<int> change_ = std::vector<int>();
 
   std::string type_;
 };
