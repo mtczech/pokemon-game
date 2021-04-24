@@ -33,4 +33,8 @@ TEST_CASE("Check to see that all of the data is properly retrieved") {
   SECTION("Check that each Pokemon has the correct moveset") {
     REQUIRE(test_data.GetAllPokemonList().at(0).moves_.at(0).name_ == "stealth-rock");
   }
+
+  SECTION("Check to see there are no duplicate pokemon on a team") {
+
+  }
 }

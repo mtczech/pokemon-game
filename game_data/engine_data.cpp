@@ -4,8 +4,10 @@
 
 #include "engine_data.h"
 
+#include <ctime>
 #include <fstream>
 #include <iostream>
+#include <cstdlib>
 #include <nlohmann/json.hpp>
 
 #include "../../include/_deps/json-src/include/nlohmann/json.hpp"
@@ -16,6 +18,7 @@ using nlohmann::json;
 EngineData::EngineData(){}
 
 EngineData::EngineData(std::string move_json_path, std::string species_json_path, std::string set_json_path) {
+  srand(unsigned (time(0)));
   std::ifstream file_input(move_json_path);
   json j;
   file_input >> j;
@@ -44,6 +47,20 @@ EngineData::EngineData(std::string move_json_path, std::string species_json_path
       }
     }
   }
+  std::vector<size_t> chosen_numbers;
+  while (chosen_numbers.size() < 10) {
+    size_t pokemon_index = (rand() % 15);
+    if (std::count(chosen_numbers.begin(), chosen_numbers.end(), pokemon_index) == 0) {
+      chosen_numbers.push_back(pokemon_index);
+    }
+  }
+  //Code here from https://stackoverflow.com/questions/9811235/
+  // best-way-to-split-a-vector-into-two-smaller-arrays
+  size_t const team_size = chosen_numbers.size() / 2;
+  std::vector<size_t> human_team(chosen_numbers.begin(), chosen_numbers.begin() + team_size);
+  std::vector<size_t> computer_team(chosen_numbers.begin() + team_size, chosen_numbers.end());
+  human_player.SetPokemonTeam(CreatePokemonTeam(human_team));
+  computer_player.SetPokemonTeam(CreatePokemonTeam(computer_team));
 }
 
 //n^4 complexity, glad my input sets are relatively small
@@ -65,4 +82,12 @@ pokemon_move::Move EngineData::FindMove(const std::string move_name) {
   }
   //The program should not get to here, throw exception
   throw "Program should not get to here";
+}
+
+std::vector<pokemon_species::Species> EngineData::CreatePokemonTeam(std::vector<size_t> indices) {
+  std::vector<pokemon_species::Species> pokemon_team;
+  for (size_t& index : indices) {
+    pokemon_team.push_back(all_pokemon_list.at(index));
+  }
+  return pokemon_team;
 }

@@ -3,12 +3,12 @@
 
 #endif FINAL_PROJECT_MTCZECH_ENGINE_DATA_H
 
-#include <C:\Cinder\cinder_0.9.2_vc2015\cinder_0.9.2_vc2015\my-projects\final-project-mtczech\httplib\httplib.h>
-
 #include <nlohmann/json.hpp>
 
 #include "../data_classes/move.h"
 #include "../data_classes/pokemon_species.h"
+#include "..\players\human_player.h"
+#include "..\players\computer_player.h"
 
 class EngineData {
  public:
@@ -33,6 +33,16 @@ class EngineData {
 
   pokemon_move::Move EngineData::FindMove(const std::string move_name);
 
+  HumanPlayer EngineData::GetHumanPlayer();
+
+  ComputerPlayer EngineData::GetComputerPlayer();
+
+  /**
+   * Function that returns an array of Pokemon with loaded movesets given an array of numbers
+   */
+
+  std::vector<pokemon_species::Species> EngineData::CreatePokemonTeam(std::vector<size_t> indices);
+
  private:
 
   //All of the moves in the game
@@ -42,5 +52,13 @@ class EngineData {
   //All of the possible pokemon that a player can have
 
   std::vector<pokemon_species::Species> all_pokemon_list;
+
+  //The human player
+
+  HumanPlayer human_player;
+
+  //The computer player
+
+  ComputerPlayer computer_player;
 
 };

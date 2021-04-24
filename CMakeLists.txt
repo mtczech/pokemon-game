@@ -69,7 +69,9 @@ list(APPEND CORE_SOURCE_FILES)
 list(APPEND SOURCE_FILES    game_data/engine_data.cpp
         pokemon_engine_interface/pokemon_engine_interface.cpp
         data_classes/move.cpp
-        data_classes/pokemon_species.cpp ${CORE_SOURCE_FILES})
+        data_classes/pokemon_species.cpp
+        players/human_player.cpp
+        players/computer_player.cpp ${CORE_SOURCE_FILES})
 
 list(APPEND TEST_FILES tests/battle_math_tests.cpp
         tests/data_retrieval_tests.cpp
