@@ -4,6 +4,8 @@
 #endif FINAL_PROJECT_MTCZECH_ENGINE_DATA_H
 
 #include <nlohmann/json.hpp>
+#include <unordered_map>
+#include <map>
 
 #include "../data_classes/move.h"
 #include "../data_classes/pokemon_species.h"
@@ -37,6 +39,14 @@ class EngineData {
 
   ComputerPlayer EngineData::GetComputerPlayer();
 
+  std::unordered_map<std::string, std::unordered_map<std::string, float>>
+  EngineData::GetTypeMatrix();
+
+  //Function for setting up the type matrix for determining strengths and weaknesses
+  //Type matrix is hard coded in since the type matchups do not change
+
+  void EngineData::SetUpTypeMatrix();
+
   /**
    * Function that returns an array of Pokemon with loaded movesets given an array of numbers
    */
@@ -60,5 +70,13 @@ class EngineData {
   //The computer player
 
   ComputerPlayer computer_player;
+
+  //The type matrix for showing which hits are super effective
+
+  std::unordered_map<std::string, std::unordered_map<std::string, float>> type_matrix_;
+
+  //Dummy string for the purpose of holding type names, never used outside of initialization
+
+  std::string type_name;
 
 };

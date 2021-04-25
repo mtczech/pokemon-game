@@ -32,7 +32,7 @@ class PokemonEngineInterface : public ci::app::App {
 
   // provided that you can see the entire UI on your screen.
   const int kWindowSize = 2000;
-  const int kMargin = 100;
+  const int kMargin = 500;
 
  private:
   EngineData engine_data_;

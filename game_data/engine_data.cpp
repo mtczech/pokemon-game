@@ -9,8 +9,9 @@
 #include <iostream>
 #include <cstdlib>
 #include <nlohmann/json.hpp>
+#include <unordered_map>
+#include <map>
 
-#include "../../include/_deps/json-src/include/nlohmann/json.hpp"
 #include "../data_classes/pokemon_species.h"
 
 using nlohmann::json;
@@ -61,6 +62,8 @@ EngineData::EngineData(std::string move_json_path, std::string species_json_path
   std::vector<size_t> computer_team(chosen_numbers.begin() + team_size, chosen_numbers.end());
   human_player.SetPokemonTeam(CreatePokemonTeam(human_team));
   computer_player.SetPokemonTeam(CreatePokemonTeam(computer_team));
+  type_matrix_ = std::unordered_map<std::string, std::unordered_map<std::string, float>>();
+  SetUpTypeMatrix();
 }
 
 //n^4 complexity, glad my input sets are relatively small
@@ -90,4 +93,30 @@ std::vector<pokemon_species::Species> EngineData::CreatePokemonTeam(std::vector<
     pokemon_team.push_back(all_pokemon_list.at(index));
   }
   return pokemon_team;
+}
+
+std::unordered_map<std::string, std::unordered_map<std::string, float>> EngineData::GetTypeMatrix() {
+  return type_matrix_;
+}
+
+void EngineData::SetUpTypeMatrix() {
+  std::ifstream matrix_json_file("C:\\Cinder\\cinder_0.9.2_vc2015\\cinder_0.9.2_vc2015\\my-projects\\final-project-mtczech\\necessary_json_data\\type_matrix_json.json");
+  json matrix_json;
+  matrix_json_file >> matrix_json;
+  for (auto& pokemon_type : matrix_json["types"]) {
+    std::unordered_map<std::string, float> type_matchups = std::unordered_map<std::string, float>();
+    for (auto& super_effective : pokemon_type.at("damage_relations").at("double_damage_from")) {
+      type_matchups.emplace(std::pair<std::string, float> {super_effective["name"], float(2)});
+    }
+    for (auto& not_very_effective : pokemon_type.at("damage_relations").at("half_damage_from")) {
+      type_matchups.emplace(std::pair<std::string, float> {not_very_effective["name"], float(0.5)});
+    }
+    if (pokemon_type.at("damage_relations").at("no_damage_from").size() != 0) {
+      for (auto& immune : pokemon_type.at("damage_relations").at("no_damage_from")) {
+        type_matchups.emplace(std::pair<std::string, float> {immune["name"], float(0)});
+      }
+    }
+    type_matrix_.emplace(std::pair<std::string, std::unordered_map<std::string, float>>
+                         {pokemon_type["name"], type_matchups});
+  }
 }
