@@ -19,11 +19,15 @@ void pokemon_interface::PokemonEngineInterface::draw() {
   DrawPokemon(computer_pokemon_, kComputerPokemonArea);
   DrawPokemonHealth(user_pokemon_, ci::vec2(0, 200));
   DrawPokemonHealth(computer_pokemon_, ci::vec2(325, 200));
+  WritePokemonNames(user_ready_pokemon_, ci::vec2(0, 110));
+  WritePokemonNames(computer_ready_pokemon_, ci::vec2(470, 110));
 }
 
 void pokemon_interface::PokemonEngineInterface::update() {
   user_pokemon_ = engine_data_.GetHumanPlayer().GetCurrentlyInBattle();
   computer_pokemon_ = engine_data_.GetComputerPlayer().GetCurrentlyInBattle();
+  user_ready_pokemon_ = engine_data_.GetHumanPlayer().GetReadyPokemon();
+  computer_ready_pokemon_ = engine_data_.GetComputerPlayer().GetReadyPokemon();
 }
 
 void pokemon_interface::PokemonEngineInterface::DrawPokemon(
@@ -49,4 +53,13 @@ void pokemon_interface::PokemonEngineInterface::DrawPokemonHealth(
   }
   std::string output = std::to_string(creature.current_hp_) + "/" + std::to_string(creature.hp_);
   ci::gl::drawString(output, position, hp_color, ci::Font("Magneto", 80));
+}
+
+void pokemon_interface::PokemonEngineInterface::WritePokemonNames(
+    std::vector<pokemon_species::Species> creatures, ci::vec2 position) {
+  std::string message = "Pokemon remaining: \n";
+  for (pokemon_species::Species creature : creatures) {
+    message += creature.species_name_ + "\n";
+  }
+  ci::gl::drawString(message, position, ci::Color("white"), ci::Font("Verdana", 20));
 }

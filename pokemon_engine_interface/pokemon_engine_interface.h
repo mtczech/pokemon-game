@@ -41,6 +41,9 @@ class PokemonEngineInterface : public ci::app::App {
 
   void PokemonEngineInterface::DrawPokemonHealth(pokemon_species::Species creature, ci::vec2 position);
 
+  void PokemonEngineInterface::WritePokemonNames(
+      std::vector<pokemon_species::Species> creatures, ci::vec2 position);
+
  private:
   EngineData engine_data_;
 
@@ -56,7 +59,7 @@ class PokemonEngineInterface : public ci::app::App {
   //A message displayed on the screen, because I don't think you can
   //display messages on the console with Cinder
 
-  std::string message_ = "pizza";
+  std::string message_ = "Your pokemon are on the left, the computer pokemon are on the right \n";
 
   //User current pokemon, for convenience
 
@@ -66,6 +69,17 @@ class PokemonEngineInterface : public ci::app::App {
 
   pokemon_species::Species computer_pokemon_;
 
+  //User's unfainted pokemon, for convenience
+
+  std::vector<pokemon_species::Species> user_ready_pokemon_;
+
+  //Computer's unfainted pokemon
+
+  std::vector<pokemon_species::Species> computer_ready_pokemon_;
+
+  //Time between message changes, in order to allow the user to read them
+
+  size_t kTimeBetweenMessages = 5000;
 
 };
 
