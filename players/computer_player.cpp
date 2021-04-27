@@ -21,7 +21,7 @@ void ComputerPlayer::SendOutFirstPokemon(size_t starting_pokemon_index) {
   ready_pokemon_.erase(ready_pokemon_.begin() + starting_pokemon_index);
 }
 
-pokemon_species::Species ComputerPlayer::GetCurrentlyInBattle() {
+pokemon_species::Species& ComputerPlayer::GetCurrentlyInBattle() {
   return currently_in_battle_;
 }
 

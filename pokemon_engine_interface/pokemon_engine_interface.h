@@ -39,6 +39,8 @@ class PokemonEngineInterface : public ci::app::App {
 
   void PokemonEngineInterface::DrawPokemon(pokemon_species::Species creature, ci::Area area);
 
+  void PokemonEngineInterface::DrawPokemonHealth(pokemon_species::Species creature, ci::vec2 position);
+
  private:
   EngineData engine_data_;
 
@@ -56,13 +58,15 @@ class PokemonEngineInterface : public ci::app::App {
 
   std::string message_ = "pizza";
 
-  //User pokemon, for convenience
+  //User current pokemon, for convenience
 
   pokemon_species::Species user_pokemon_;
 
-  //Computer pokemon, for convenience
+  //Computer current pokemon, for convenience
 
   pokemon_species::Species computer_pokemon_;
+
+
 };
 
 }  // namespace pokemon_interface

@@ -20,6 +20,7 @@ EngineData::EngineData(){}
 
 EngineData::EngineData(std::string move_json_path, std::string species_json_path, std::string set_json_path) {
   srand(unsigned (time(0)));
+  //Generates all of the pokemon moves from the first json
   std::ifstream file_input(move_json_path);
   json j;
   file_input >> j;
@@ -28,6 +29,7 @@ EngineData::EngineData(std::string move_json_path, std::string species_json_path
     m.from_json(j, m, k);
     moves.push_back(m);
   }
+  //Generates all of the pokemon from the second json
   std::ifstream pokemon_file_input(species_json_path);
   json pokemon_species_json;
   pokemon_file_input >> pokemon_species_json;
@@ -36,6 +38,7 @@ EngineData::EngineData(std::string move_json_path, std::string species_json_path
     species.from_json(pokemon, species);
     all_pokemon_list.push_back(species);
   }
+  //Uses the third json to map the pokemon to their movesets
   std::ifstream set_file_input(set_json_path);
   json pokemon_set_json;
   set_file_input >> pokemon_set_json;
@@ -48,6 +51,7 @@ EngineData::EngineData(std::string move_json_path, std::string species_json_path
       }
     }
   }
+  //Randomly selects 10 out of the 15 pokemon, assigns 5 to the player and 5 to the computer
   std::vector<size_t> chosen_numbers;
   while (chosen_numbers.size() < 10) {
     size_t pokemon_index = (rand() % 15);

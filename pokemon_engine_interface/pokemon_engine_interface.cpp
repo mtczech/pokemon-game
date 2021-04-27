@@ -15,10 +15,10 @@ void pokemon_interface::PokemonEngineInterface::draw() {
   ci::Color("white");
   ci::gl::drawSolidRect(ci::Rectf (ci::vec2(0, 0), ci::vec2(650, 100)));
   ci::gl::drawString(message_, ci::vec2(0, 0), ci::Color("black"), ci::Font("Verdana", 20));
-  if (engine_data_.GetHumanPlayer().GetReadyPokemon().size() < 5) {
-    DrawPokemon(user_pokemon_, kUserPokemonArea);
-    DrawPokemon(computer_pokemon_, kComputerPokemonArea);
-  }
+  DrawPokemon(user_pokemon_, kUserPokemonArea);
+  DrawPokemon(computer_pokemon_, kComputerPokemonArea);
+  DrawPokemonHealth(user_pokemon_, ci::vec2(0, 200));
+  DrawPokemonHealth(computer_pokemon_, ci::vec2(325, 200));
 }
 
 void pokemon_interface::PokemonEngineInterface::update() {
@@ -35,4 +35,18 @@ void pokemon_interface::PokemonEngineInterface::DrawPokemon(
 
 void pokemon_interface::PokemonEngineInterface::keyDown(ci::app::KeyEvent event) {
 
+}
+
+void pokemon_interface::PokemonEngineInterface::DrawPokemonHealth(
+    pokemon_species::Species creature, ci::vec2 position) {
+  ci::Color hp_color;
+  if (float ((creature.current_hp_) / float (creature.hp_)) < 0.2) {
+    hp_color = ci::Color("red");
+  } else if (float ((creature.current_hp_) / float (creature.hp_)) < 0.5) {
+    hp_color = ci::Color("yellow");
+  } else {
+    hp_color = ci::Color("green");
+  }
+  std::string output = std::to_string(creature.current_hp_) + "/" + std::to_string(creature.hp_);
+  ci::gl::drawString(output, position, hp_color, ci::Font("Magneto", 80));
 }

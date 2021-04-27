@@ -28,6 +28,6 @@ std::vector<pokemon_species::Species> HumanPlayer::GetReadyPokemon() {
   return ready_pokemon_;
 }
 
-pokemon_species::Species HumanPlayer::GetCurrentlyInBattle() {
+pokemon_species::Species& HumanPlayer::GetCurrentlyInBattle() {
   return currently_in_battle_;
 }

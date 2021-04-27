@@ -27,7 +27,7 @@ class HumanPlayer {
 
   std::vector<pokemon_species::Species> HumanPlayer::GetReadyPokemon();
 
-  pokemon_species::Species HumanPlayer::GetCurrentlyInBattle();
+  pokemon_species::Species& HumanPlayer::GetCurrentlyInBattle();
 
  private:
   //The pokemon that the player has remaining

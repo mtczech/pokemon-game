@@ -20,7 +20,7 @@ class ComputerPlayer {
 
   void ComputerPlayer::SendOutFirstPokemon(size_t starting_pokemon_index);
 
-  pokemon_species::Species ComputerPlayer::GetCurrentlyInBattle();
+  pokemon_species::Species& ComputerPlayer::GetCurrentlyInBattle();
 
   std::vector<pokemon_species::Species> ComputerPlayer::GetReadyPokemon();
 
