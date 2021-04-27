@@ -6,6 +6,7 @@
 #include <nlohmann/json.hpp>
 #include <unordered_map>
 #include <map>
+#include <cinder/app/App.h>
 
 #include "../data_classes/move.h"
 #include "../data_classes/pokemon_species.h"
@@ -47,6 +48,8 @@ class EngineData {
 
   void EngineData::SetUpTypeMatrix();
 
+  size_t EngineData::FindLeadIndex(std::vector<pokemon_species::Species> v);
+
   /**
    * Function that returns an array of Pokemon with loaded movesets given an array of numbers
    */
@@ -74,9 +77,4 @@ class EngineData {
   //The type matrix for showing which hits are super effective
 
   std::unordered_map<std::string, std::unordered_map<std::string, float>> type_matrix_;
-
-  //Dummy string for the purpose of holding type names, never used outside of initialization
-
-  std::string type_name;
-
 };

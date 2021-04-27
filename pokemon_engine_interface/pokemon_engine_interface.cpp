@@ -12,11 +12,27 @@ pokemon_interface::PokemonEngineInterface::PokemonEngineInterface() {
 }
 
 void pokemon_interface::PokemonEngineInterface::draw() {
-  auto starting_image = ci::loadImage(ci::loadUrl("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/129.png"));
-  ci::gl::Texture2dRef starting_pokemon_image = ci::gl::Texture2d::create(starting_image);
-  ci::gl::draw(starting_pokemon_image, ci::Area(ci::vec2(0, 0), ci::vec2(500, 500)));
+  ci::Color("white");
+  ci::gl::drawSolidRect(ci::Rectf (ci::vec2(0, 0), ci::vec2(650, 100)));
+  ci::gl::drawString(message_, ci::vec2(0, 0), ci::Color("black"), ci::Font("Verdana", 20));
+  if (engine_data_.GetHumanPlayer().GetReadyPokemon().size() < 5) {
+    DrawPokemon(user_pokemon_, kUserPokemonArea);
+    DrawPokemon(computer_pokemon_, kComputerPokemonArea);
+  }
 }
 
 void pokemon_interface::PokemonEngineInterface::update() {
-  
+  user_pokemon_ = engine_data_.GetHumanPlayer().GetCurrentlyInBattle();
+  computer_pokemon_ = engine_data_.GetComputerPlayer().GetCurrentlyInBattle();
+}
+
+void pokemon_interface::PokemonEngineInterface::DrawPokemon(
+    pokemon_species::Species creature, ci::Area area) {
+  auto starting_image = ci::loadImage(ci::loadUrl(creature.front_sprite_));
+  ci::gl::Texture2dRef starting_pokemon_image = ci::gl::Texture2d::create(starting_image);
+  ci::gl::draw(starting_pokemon_image, area);
+}
+
+void pokemon_interface::PokemonEngineInterface::keyDown(ci::app::KeyEvent event) {
+
 }

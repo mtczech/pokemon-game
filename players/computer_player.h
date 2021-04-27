@@ -18,6 +18,12 @@ class ComputerPlayer {
 
   void ComputerPlayer::SetPokemonTeam(std::vector<pokemon_species::Species> team);
 
+  void ComputerPlayer::SendOutFirstPokemon(size_t starting_pokemon_index);
+
+  pokemon_species::Species ComputerPlayer::GetCurrentlyInBattle();
+
+  std::vector<pokemon_species::Species> ComputerPlayer::GetReadyPokemon();
+
  private:
   //The pokemon that the computer player has remaining
   std::vector<pokemon_species::Species> ready_pokemon_;

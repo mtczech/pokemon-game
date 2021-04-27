@@ -37,4 +37,8 @@ TEST_CASE("Check to see that all of the data is properly retrieved") {
   SECTION("Check to see there are no duplicate pokemon on a team") {
 
   }
+
+  SECTION("Check to see if the type matrix has been correctly created") {
+
+  }
 }

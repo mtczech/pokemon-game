@@ -64,6 +64,8 @@ EngineData::EngineData(std::string move_json_path, std::string species_json_path
   computer_player.SetPokemonTeam(CreatePokemonTeam(computer_team));
   type_matrix_ = std::unordered_map<std::string, std::unordered_map<std::string, float>>();
   SetUpTypeMatrix();
+  human_player.SendOutFirstPokemon(FindLeadIndex(human_player.GetReadyPokemon()));
+  computer_player.SendOutFirstPokemon(FindLeadIndex(computer_player.GetReadyPokemon()));
 }
 
 //n^4 complexity, glad my input sets are relatively small
@@ -119,4 +121,23 @@ void EngineData::SetUpTypeMatrix() {
     type_matrix_.emplace(std::pair<std::string, std::unordered_map<std::string, float>>
                          {pokemon_type["name"], type_matchups});
   }
+}
+
+HumanPlayer EngineData::GetHumanPlayer() {
+  return human_player;
+}
+
+ComputerPlayer EngineData::GetComputerPlayer() {
+  return computer_player;
+}
+
+size_t EngineData::FindLeadIndex(std::vector<pokemon_species::Species> v) {
+  for (size_t i = 0; i < v.size(); i++) {
+    for (pokemon_move::Move m : v.at(i).moves_) {
+      if (m.name_ == "stealth-rock") {
+        return i;
+      }
+    }
+  }
+  return (rand() % 5);
 }

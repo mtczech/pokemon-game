@@ -16,7 +16,18 @@ class HumanPlayer {
 
   HumanPlayer(std::vector<pokemon_species::Species>);
 
+  /**
+   * Function for setting up the player's pokemon team
+   * @param team the pokemon being put into the player's party
+   */
+
   void HumanPlayer::SetPokemonTeam(std::vector<pokemon_species::Species> team);
+
+  void HumanPlayer::SendOutFirstPokemon(size_t starting_pokemon_index);
+
+  std::vector<pokemon_species::Species> HumanPlayer::GetReadyPokemon();
+
+  pokemon_species::Species HumanPlayer::GetCurrentlyInBattle();
 
  private:
   //The pokemon that the player has remaining
