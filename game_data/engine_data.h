@@ -56,6 +56,14 @@ class EngineData {
 
   std::vector<pokemon_species::Species> EngineData::CreatePokemonTeam(std::vector<size_t> indices);
 
+  std::string EngineData::GetMessage();
+
+  /**
+   * Function to check whether a given move executes properly or misses
+   */
+
+  bool EngineData::CheckIfMoveHits(pokemon_species::Species& attacking, const pokemon_move::Move move);
+
  private:
 
   //All of the moves in the game
@@ -77,4 +85,12 @@ class EngineData {
   //The type matrix for showing which hits are super effective
 
   std::unordered_map<std::string, std::unordered_map<std::string, float>> type_matrix_;
+
+  //A message about a move that has been used, it is meant to be passed to the interface
+
+  std::string message_;
+
+  //Probability variable for whether or not a move actually hits
+
+  size_t kProbability = 4;
 };

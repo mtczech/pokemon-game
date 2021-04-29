@@ -145,3 +145,39 @@ size_t EngineData::FindLeadIndex(std::vector<pokemon_species::Species> v) {
   }
   return (rand() % 5);
 }
+
+std::string EngineData::GetMessage() {
+  return message_;
+}
+
+bool EngineData::CheckIfMoveHits(pokemon_species::Species& attacking, const pokemon_move::Move move) {
+  srand(unsigned (time(0)));
+  size_t ailment_chance = rand() % kProbability;
+  size_t paralysis_chance = 1;
+  if (ailment_chance < paralysis_chance && attacking.ailment_ == "paralysis") {
+    message_ = attacking.species_name_ + " is fully paralyzed!";
+    return false;
+  }
+  size_t sleep_chance = 2;
+  if (ailment_chance < sleep_chance && attacking.ailment_ == "sleep") {
+    message_ = attacking.species_name_ + " is fast asleep.";
+    return false;
+  } else if (attacking.ailment_ == "sleep") {
+    message_ = attacking.species_name_ + " woke up!";
+    attacking.ailment_ = "none";
+  }
+  size_t freeze_chance = 3;
+  if (ailment_chance < freeze_chance && attacking.ailment_ == "freeze") {
+    message_ = attacking.species_name_ + " is frozen solid!";
+    return false;
+  } else if (attacking.ailment_ == "freeze") {
+    message_ = attacking.species_name_ + " thawed out!";
+    attacking.ailment_ = "none";
+  }
+  size_t miss_chance = rand() % 100;
+  if (move.accuracy_ <= miss_chance) {
+    message_ = attacking.species_name_ + "'s attack missed!";
+    return false;
+  }
+  return true;
+}

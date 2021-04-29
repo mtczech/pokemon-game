@@ -41,4 +41,12 @@ TEST_CASE("Check to see that all of the data is properly retrieved") {
   SECTION("Check to see if the type matrix has been correctly created") {
 
   }
+
+  SECTION("Check if a move can do X4 damage against a dual typed pokemon") {
+
+  }
+
+  SECTION("Test if a move can do no damage") {
+
+  }
 }
