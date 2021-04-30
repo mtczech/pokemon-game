@@ -51,6 +51,20 @@ class EngineData {
   size_t EngineData::FindLeadIndex(std::vector<pokemon_species::Species> v);
 
   /**
+   * Adjusts the stats before every turn based on stat changes or ailments to the pokemon
+   * @param pokemon the pokemon having its stats adjusted
+   */
+
+  void AdjustStats(pokemon_species::Species pokemon);
+
+  /**
+   * Does the opposite of AdjustStats so that AdjustStats is not applied more than once
+   * It reverses all the changes made by AdjustStats
+   */
+
+  void SetStatsBack(pokemon_species::Species pokemon);
+
+  /**
    * Function that returns an array of Pokemon with loaded movesets given an array of numbers
    */
 
@@ -62,7 +76,12 @@ class EngineData {
    * Function to check whether a given move executes properly or misses
    */
 
-  bool EngineData::CheckIfMoveHits(pokemon_species::Species& attacking, const pokemon_move::Move move);
+  bool EngineData::CheckIfMoveHits(pokemon_species::Species& attacking,
+                                   const pokemon_move::Move move);
+
+  /**
+   * Function to actually execute moves from one pokemon to another
+   */
 
  private:
 
@@ -93,4 +112,8 @@ class EngineData {
   //Probability variable for whether or not a move actually hits
 
   size_t kProbability = 4;
+
+  //Damage constant based on level, since all pokemon here are level 100 this is 42
+
+  size_t kDamageConstant = 42;
 };

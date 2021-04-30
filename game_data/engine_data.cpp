@@ -181,3 +181,53 @@ bool EngineData::CheckIfMoveHits(pokemon_species::Species& attacking, const poke
   }
   return true;
 }
+
+void EngineData::AdjustStats(pokemon_species::Species pokemon) {
+  if (pokemon.ailment_ == "burn") {
+    pokemon.other_stats_.at("attack") = size_t
+        (std::floorf(float (pokemon.other_stats_.at("attack")) * float (0.5)));
+  } else if (pokemon.ailment_ == "paralysis") {
+    pokemon.other_stats_.at("speed") = size_t
+        (std::floorf(float (pokemon.other_stats_.at("speed")) * float (0.25)));
+  }
+  //Code taken from https://www.lonecpluspluscoder.com/2015/08/13/
+  //an-elegant-way-to-extract-keys-from-a-c-map/
+  std::vector<std::string> stats;
+  for (auto& s : pokemon.other_stats_) {
+    stats.push_back(s.first);
+  }
+  for (std::string stat : stats) {
+    float stat_changed = float (pokemon.other_stats_.at(stat));
+    if (pokemon.stat_changes_.at(stat) < 0) {
+      float multiplier = 2 / float (2 - pokemon.stat_changes_.at(stat));
+      pokemon.other_stats_.at(stat) = size_t (std::ceilf(stat_changed *= multiplier));
+    } else if (pokemon.stat_changes_.at(stat) > 0) {
+      float multiplier = float (2 + pokemon.stat_changes_.at(stat)) / 2;
+      pokemon.other_stats_.at(stat) = size_t (std::floorf(stat_changed *= multiplier));
+    }
+  }
+}
+
+void EngineData::SetStatsBack(pokemon_species::Species pokemon) {
+  if (pokemon.ailment_ == "burn") {
+    pokemon.other_stats_.at("attack") = size_t
+        (std::floorf(float (pokemon.other_stats_.at("attack")) * 2));
+  } else if (pokemon.ailment_ == "paralysis") {
+    pokemon.other_stats_.at("speed") = size_t
+        (std::floorf(float (pokemon.other_stats_.at("speed")) * 4));
+  }
+  std::vector<std::string> stats;
+  for (auto& s : pokemon.other_stats_) {
+    stats.push_back(s.first);
+  }
+  for (std::string stat : stats) {
+    float stat_changed = float (pokemon.other_stats_.at(stat));
+    if (pokemon.stat_changes_.at(stat) < 0) {
+      float multiplier = float (2 - pokemon.stat_changes_.at(stat)) / 2;
+      pokemon.other_stats_.at(stat) = size_t (std::ceilf(stat_changed *= multiplier));
+    } else if (pokemon.stat_changes_.at(stat) > 0) {
+      float multiplier =  2 / float (2 + pokemon.stat_changes_.at(stat));
+      pokemon.other_stats_.at(stat) = size_t (std::floorf(stat_changed *= multiplier));
+    }
+  }
+}

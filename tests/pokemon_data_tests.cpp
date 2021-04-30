@@ -11,4 +11,16 @@ TEST_CASE("Just setting up the tests") {
   SECTION("Check to see a pokemon's hp cannot go above its max") {
 
   }
+
+  SECTION("Check to see stats are always whole numbers") {
+
+  }
+
+  SECTION("Check to see the game is over when one side has no pokemon remaining") {
+
+  }
+
+  SECTION("Check switching pokemon out works properly") {
+
+  }
 }

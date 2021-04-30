@@ -50,7 +50,7 @@ class Species {
 
   std::string front_sprite_;
 
-  size_t current_hp_;
+  int current_hp_;
 
   std::string species_name_;
 
