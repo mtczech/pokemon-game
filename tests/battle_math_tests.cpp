@@ -14,5 +14,7 @@ TEST_CASE("Sample damage calculation math test") {
 
   }
 
-  SECTION("")
+  SECTION("Test Flare Blitz recoil is correct") {
+
+  }
 }

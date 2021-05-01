@@ -80,8 +80,39 @@ class EngineData {
                                    const pokemon_move::Move move);
 
   /**
-   * Function to actually execute moves from one pokemon to another
+   * Function to calculate damage dealt by a given move
    */
+
+  size_t EngineData::CalculateDamageDealt(pokemon_species::Species attacking,
+            pokemon_move::Move attack, pokemon_species::Species defending);
+
+  /**
+   * Function for getting the STAB of a move
+   * (A move gets a 1.5x power bonus if it is the same type as the pokemon using it)
+   */
+
+  float EngineData::GetStab(pokemon_species::Species attacking, pokemon_move::Move attack);
+
+  /**
+   * Function for getting the damage multiplier of a move
+   * based on the types of the defending pokemon
+   */
+
+  float EngineData::GetTypeMultiplier(pokemon_species::Species defending,
+                                      pokemon_move::Move attack);
+
+  /**
+   * Function for determining whether or not an additional effect happens
+   */
+
+  bool EngineData::CheckChance(size_t percent);
+
+  /**
+   * Function for adding additional effects to a pokemon move
+   */
+
+  void EngineData::AddEffects(pokemon_species::Species& attacking, pokemon_species::Species& defending,
+                              pokemon_move::Move& move);
 
  private:
 

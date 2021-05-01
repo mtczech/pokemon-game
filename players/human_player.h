@@ -29,6 +29,10 @@ class HumanPlayer {
 
   pokemon_species::Species& HumanPlayer::GetCurrentlyInBattle();
 
+  void HumanPlayer::SetRocks();
+
+  void HumanPlayer::RemoveRocks();
+
  private:
   //The pokemon that the player has remaining
   std::vector<pokemon_species::Species> ready_pokemon_;

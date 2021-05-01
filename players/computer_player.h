@@ -24,6 +24,18 @@ class ComputerPlayer {
 
   std::vector<pokemon_species::Species> ComputerPlayer::GetReadyPokemon();
 
+  /**
+   * Sets up stealth rock on the computer's side of the field
+   */
+
+  void ComputerPlayer::SetRocks();
+
+  /**
+   * Removes rocks from the computer's side of the field
+   */
+
+  void ComputerPlayer::RemoveRocks();
+
  private:
   //The pokemon that the computer player has remaining
   std::vector<pokemon_species::Species> ready_pokemon_;

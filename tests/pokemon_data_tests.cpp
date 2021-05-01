@@ -12,6 +12,10 @@ TEST_CASE("Just setting up the tests") {
 
   }
 
+  SECTION("Check to see a pokemon's hp cannot go below 0") {
+
+  }
+
   SECTION("Check to see stats are always whole numbers") {
 
   }
@@ -21,6 +25,22 @@ TEST_CASE("Just setting up the tests") {
   }
 
   SECTION("Check switching pokemon out works properly") {
+
+  }
+
+  SECTION("No errors if switch move used with 1 pokemon left") {
+
+  }
+
+  SECTION("Check to see stat changes work properly when being added") {
+
+  }
+
+  SECTION("Check to see stat changes work when being implemented") {
+
+  }
+
+  SECTION("Stat changes reset properly after every turn") {
 
   }
 }

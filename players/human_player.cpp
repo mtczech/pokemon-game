@@ -31,3 +31,15 @@ std::vector<pokemon_species::Species> HumanPlayer::GetReadyPokemon() {
 pokemon_species::Species& HumanPlayer::GetCurrentlyInBattle() {
   return currently_in_battle_;
 }
+
+void HumanPlayer::SetRocks() {
+  if (!has_rocks_) {
+    has_rocks_ = true;
+  }
+}
+
+void HumanPlayer::RemoveRocks() {
+  if (has_rocks_) {
+    has_rocks_ = false;
+  }
+}

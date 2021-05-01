@@ -70,6 +70,7 @@ EngineData::EngineData(std::string move_json_path, std::string species_json_path
   SetUpTypeMatrix();
   human_player.SendOutFirstPokemon(FindLeadIndex(human_player.GetReadyPokemon()));
   computer_player.SendOutFirstPokemon(FindLeadIndex(computer_player.GetReadyPokemon()));
+  std::cout << "test" << std::endl;
 }
 
 //n^4 complexity, glad my input sets are relatively small
@@ -158,6 +159,12 @@ bool EngineData::CheckIfMoveHits(pokemon_species::Species& attacking, const poke
     message_ = attacking.species_name_ + " is fully paralyzed!";
     return false;
   }
+  size_t confusion_chance = 1;
+  if (ailment_chance < confusion_chance && attacking.ailment_ == "confusion") {
+    message_ = attacking.species_name_ + " is confused and hurt itself!";
+    attacking.current_hp_ = std::max(0, attacking.current_hp_ - 40);
+    return false;
+  }
   size_t sleep_chance = 2;
   if (ailment_chance < sleep_chance && attacking.ailment_ == "sleep") {
     message_ = attacking.species_name_ + " is fast asleep.";
@@ -229,5 +236,86 @@ void EngineData::SetStatsBack(pokemon_species::Species pokemon) {
       float multiplier =  2 / float (2 + pokemon.stat_changes_.at(stat));
       pokemon.other_stats_.at(stat) = size_t (std::floorf(stat_changed *= multiplier));
     }
+  }
+}
+
+size_t EngineData::CalculateDamageDealt(pokemon_species::Species attacking,
+         pokemon_move::Move attack, pokemon_species::Species defending) {
+  float stats_multiplier;
+  if (attack.damage_class_name_ == "physical") {
+    stats_multiplier = float (attacking.other_stats_.at("attack")) /
+                       float (defending.other_stats_.at("defense"));
+  } else if (attack.damage_class_name_ == "special") {
+    stats_multiplier = float (attacking.other_stats_.at("special-attack")) /
+                       float (defending.other_stats_.at("special-defense"));
+  } else {
+    return 0;
+  }
+  float base_damage = ((float (kDamageConstant * attack.power_) * stats_multiplier) /
+                            float (50)) + float (2);
+  float rng_multiplier = float (unsigned (rand() % 16) + 85) / float (100);
+  float final_damage = base_damage * rng_multiplier;
+  final_damage *= GetStab(attacking, attack);
+  final_damage *= GetTypeMultiplier(defending, attack);
+  return size_t (std::ceilf(final_damage));
+}
+
+float EngineData::GetStab(pokemon_species::Species attacking, pokemon_move::Move attack) {
+  for (std::string type : attacking.types_) {
+    if (type == attack.type_) {
+      return 1.5;
+    }
+  }
+  return 1;
+}
+
+float EngineData::GetTypeMultiplier(pokemon_species::Species defending,
+                                    pokemon_move::Move attack) {
+  float type_multiplier = 1;
+  for (std::string type : defending.types_) {
+    type_multiplier *= type_matrix_.at(attack.type_).at(type);
+  }
+  return type_multiplier;
+}
+
+bool EngineData::CheckChance(size_t percent) {
+  auto r = unsigned (rand() % 100);
+  return percent > r;
+}
+
+void EngineData::AddEffects(pokemon_species::Species& attacking,
+                            pokemon_species::Species& defending, pokemon_move::Move& move) {
+  //As much as I would love to do a switch function here, you cannot do it with strings in c++
+  if (move.category_name_ == "field-effect"
+      && attacking.species_name_ == human_player.GetCurrentlyInBattle().species_name_) {
+    computer_player.SetRocks();
+  } else if (move.category_name_ == "field-effect") {
+    human_player.SetRocks();
+  }
+  if (move.category_name_ == "damage+raise" || move.category_name_ == "net-good-stats") {
+    for (size_t i = 0; i < move.stat_.size(); i++) {
+      attacking.stat_changes_.at(move.stat_.at(i)) += move.change_.at(i);
+    }
+  }
+  if (defending.ailment_ == "none" && move.category_name_ == "ailment") {
+    defending.ailment_ = move.ailment_name_;
+  }
+  if (move.category_name_ == "damage+ailment" && defending.ailment_ == "none") {
+    if (CheckChance(move.ailment_chance_)) {
+      defending.ailment_ = move.ailment_name_;
+    }
+  }
+  if (move.category_name_ == "unique") {
+    human_player.RemoveRocks();
+    computer_player.RemoveRocks();
+  }
+  if (move.category_name_ == "damage+lower" && CheckChance(move.stat_chance_)) {
+    for (size_t i = 0; i < move.stat_.size(); i++) {
+      defending.stat_changes_.at(move.stat_.at(i)) += move.change_.at(i);
+    }
+  }
+  if (move.category_name_ == "heal") {
+    size_t hp_after_healing = attacking.current_hp_ += ((attacking.hp_ * move.healing_) / 100);
+    attacking.current_hp_ = std::min(attacking.hp_, hp_after_healing);
   }
 }

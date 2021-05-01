@@ -28,3 +28,15 @@ pokemon_species::Species& ComputerPlayer::GetCurrentlyInBattle() {
 std::vector<pokemon_species::Species> ComputerPlayer::GetReadyPokemon() {
   return ready_pokemon_;
 }
+
+void ComputerPlayer::SetRocks() {
+  if (!has_rocks_) {
+    has_rocks_ = true;
+  }
+}
+
+void ComputerPlayer::RemoveRocks() {
+  if (has_rocks_) {
+    has_rocks_ = false;
+  }
+}
