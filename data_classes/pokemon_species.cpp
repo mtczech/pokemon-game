@@ -8,7 +8,7 @@
 namespace pokemon_species {
 
 //No reason not to use a magic number here, the formula for calculating HP is always constant
-//Except for if you are using a Shedinja
+//Except if you are using a Shedinja
 
 pokemon_species::Species::Species() { }
 
@@ -43,6 +43,13 @@ void pokemon_species::Species::from_json(const nlohmann::json &j,
     types_.push_back(type.at("type").at("name"));
   }
   front_sprite_ = j.at("sprites").at("front_default");
+}
+
+void pokemon_species::Species::AddResidualDamage() {
+  if (ailment_ == "burn" || ailment_ == "poison") {
+    float ailment_damage = std::floorf(float(hp_) / float (8));
+    current_hp_ = int (std::max(0, current_hp_ -= int (ailment_damage)));
+  }
 }
 
 }

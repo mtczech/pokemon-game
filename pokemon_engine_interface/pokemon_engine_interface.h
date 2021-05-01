@@ -80,7 +80,6 @@ class PokemonEngineInterface : public ci::app::App {
   //Time between message changes, in order to allow the user to read them
 
   size_t kTimeBetweenMessages = 5000;
-
 };
 
 }  // namespace pokemon_interface

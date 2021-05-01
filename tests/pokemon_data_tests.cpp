@@ -43,4 +43,20 @@ TEST_CASE("Just setting up the tests") {
   SECTION("Stat changes reset properly after every turn") {
 
   }
+
+  SECTION("Check multi hit moves hit multiple times") {
+
+  }
+
+  SECTION("Water Spout's power changes with HP level") {
+
+  }
+
+  SECTION("Test Stealth Rock actually does damage") {
+
+  }
+
+  SECTION("Test Explosion faints the user") {
+
+  }
 }

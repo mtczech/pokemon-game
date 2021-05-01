@@ -29,9 +29,19 @@ class HumanPlayer {
 
   pokemon_species::Species& HumanPlayer::GetCurrentlyInBattle();
 
+  /**
+   * Sets up stealth rock
+   */
+
   void HumanPlayer::SetRocks();
 
+  /**
+   * Removes stealth rock
+   */
+
   void HumanPlayer::RemoveRocks();
+
+  void HumanPlayer::CheckIfPokemonFainted();
 
  private:
   //The pokemon that the player has remaining

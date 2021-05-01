@@ -48,6 +48,8 @@ class Species {
 
   size_t pokemon_species::Species::CalculateStatFromBase(size_t base_stat);
 
+  void pokemon_species::Species::AddResidualDamage();
+
   std::string front_sprite_;
 
   int current_hp_;

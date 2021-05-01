@@ -257,6 +257,8 @@ size_t EngineData::CalculateDamageDealt(pokemon_species::Species attacking,
   float final_damage = base_damage * rng_multiplier;
   final_damage *= GetStab(attacking, attack);
   final_damage *= GetTypeMultiplier(defending, attack);
+  size_t recoil = unsigned (std::floor((final_damage * attack.drain_) / 100));
+  attacking.current_hp_ += std::max(0, attacking.current_hp_ += recoil);
   return size_t (std::ceilf(final_damage));
 }
 
@@ -289,8 +291,10 @@ void EngineData::AddEffects(pokemon_species::Species& attacking,
   if (move.category_name_ == "field-effect"
       && attacking.species_name_ == human_player.GetCurrentlyInBattle().species_name_) {
     computer_player.SetRocks();
+    message_ = "Rocks are ready to dig into opposing Pokemon!";
   } else if (move.category_name_ == "field-effect") {
     human_player.SetRocks();
+    message_ = "Rocks are ready to dig into your Pokemon!";
   }
   if (move.category_name_ == "damage+raise" || move.category_name_ == "net-good-stats") {
     for (size_t i = 0; i < move.stat_.size(); i++) {
@@ -308,6 +312,7 @@ void EngineData::AddEffects(pokemon_species::Species& attacking,
   if (move.category_name_ == "unique") {
     human_player.RemoveRocks();
     computer_player.RemoveRocks();
+    message_ = "Both sides no longer have rocks";
   }
   if (move.category_name_ == "damage+lower" && CheckChance(move.stat_chance_)) {
     for (size_t i = 0; i < move.stat_.size(); i++) {
@@ -318,4 +323,45 @@ void EngineData::AddEffects(pokemon_species::Species& attacking,
     size_t hp_after_healing = attacking.current_hp_ += ((attacking.hp_ * move.healing_) / 100);
     attacking.current_hp_ = std::min(attacking.hp_, hp_after_healing);
   }
+}
+
+void EngineData::CheckIfGameOver() {
+  if (human_player.GetReadyPokemon().size() == 0 &&
+      human_player.GetCurrentlyInBattle().current_hp_ <= 0) {
+    message_ = "Game over, better luck next time";
+    is_game_over_ = true;
+  } else if (computer_player.GetReadyPokemon().size() == 0 &&
+             computer_player.GetCurrentlyInBattle().current_hp_ == 0) {
+    message_ = "Congratulations! You are the Pokemon League Champion!";
+    is_game_over_ = true;
+  }
+}
+
+bool EngineData::HumanGoesFirst(pokemon_move::Move human_move, pokemon_move::Move computer_move) {
+  AdjustStats(human_player.GetCurrentlyInBattle());
+  AdjustStats(computer_player.GetCurrentlyInBattle());
+  if (human_move.priority_ > computer_move.priority_) {
+    return true;
+  } else if (computer_move.priority_ > human_move.priority_) {
+    return false;
+  }
+  bool returned = human_player.GetCurrentlyInBattle().other_stats_.at("speed")
+                  >= computer_player.GetCurrentlyInBattle().other_stats_.at("speed");
+  SetStatsBack(human_player.GetCurrentlyInBattle());
+  SetStatsBack(computer_player.GetCurrentlyInBattle());
+  return returned;
+}
+
+size_t EngineData::FindBestComputerMove() {
+  size_t best_move_index = 0;
+  size_t damage_dealt_by_best_move = 0;
+  for (size_t i = 0; i < computer_player.GetCurrentlyInBattle().moves_.size(); i++) {
+    size_t damage = CalculateDamageDealt(computer_player.GetCurrentlyInBattle(),
+          computer_player.GetCurrentlyInBattle().moves_.at(i), human_player.GetCurrentlyInBattle());
+    if (damage >= damage_dealt_by_best_move) {
+      best_move_index = i;
+      damage_dealt_by_best_move = damage;
+    }
+  }
+  return best_move_index;
 }

@@ -114,6 +114,25 @@ class EngineData {
   void EngineData::AddEffects(pokemon_species::Species& attacking, pokemon_species::Species& defending,
                               pokemon_move::Move& move);
 
+  /**
+   * Function for checking if the game is over
+   */
+
+  void EngineData::CheckIfGameOver();
+
+  /**
+   * Function to check who goes first
+   */
+
+  bool EngineData::HumanGoesFirst(pokemon_move::Move human_move, pokemon_move::Move computer_move);
+
+  /**
+   * Function for finding the best move for the computer player to use
+   * @return the index of the move being used in the pokemon's moveset
+   */
+
+  size_t EngineData::FindBestComputerMove();
+
  private:
 
   //All of the moves in the game
@@ -147,4 +166,8 @@ class EngineData {
   //Damage constant based on level, since all pokemon here are level 100 this is 42
 
   size_t kDamageConstant = 42;
+
+  //Function to check if the game is over
+
+  bool is_game_over_ = false;
 };

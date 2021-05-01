@@ -38,7 +38,10 @@ void pokemon_interface::PokemonEngineInterface::DrawPokemon(
 }
 
 void pokemon_interface::PokemonEngineInterface::keyDown(ci::app::KeyEvent event) {
-
+  switch (event.getChar()) {
+    case '0':;
+      //Put function to use move at index 0
+  }
 }
 
 void pokemon_interface::PokemonEngineInterface::DrawPokemonHealth(

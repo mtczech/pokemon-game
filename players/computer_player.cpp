@@ -40,3 +40,14 @@ void ComputerPlayer::RemoveRocks() {
     has_rocks_ = false;
   }
 }
+
+void ComputerPlayer::CheckIfPokemonFainted() {
+  if (currently_in_battle_.current_hp_ <= 0) {
+    fainted_pokemon_.push_back(currently_in_battle_);
+    if (ready_pokemon_.size() != 0) {
+      int r = rand() % ready_pokemon_.size();
+      currently_in_battle_ = ready_pokemon_.at(r);
+      ready_pokemon_.erase(ready_pokemon_.begin() + r);
+    }
+  }
+}

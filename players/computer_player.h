@@ -36,6 +36,12 @@ class ComputerPlayer {
 
   void ComputerPlayer::RemoveRocks();
 
+  /**
+   * Checks if the current pokemon is fainted for the computer player
+   */
+
+  void ComputerPlayer::CheckIfPokemonFainted();
+
  private:
   //The pokemon that the computer player has remaining
   std::vector<pokemon_species::Species> ready_pokemon_;
