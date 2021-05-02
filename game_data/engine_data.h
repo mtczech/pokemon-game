@@ -26,7 +26,7 @@ class EngineData {
 
   std::vector<pokemon_move::Move> EngineData::GetMoves();
 
-  std::vector<pokemon_species::Species> EngineData::GetAllPokemonList();
+  std::vector<pokemon_species::Species*> EngineData::GetAllPokemonList();
 
   /**
    * Function for finding a move given its name
@@ -48,7 +48,7 @@ class EngineData {
 
   void EngineData::SetUpTypeMatrix();
 
-  size_t EngineData::FindLeadIndex(std::vector<pokemon_species::Species> v);
+  size_t EngineData::FindLeadIndex(std::vector<pokemon_species::Species*> v);
 
   /**
    * Adjusts the stats before every turn based on stat changes or ailments to the pokemon
@@ -68,7 +68,7 @@ class EngineData {
    * Function that returns an array of Pokemon with loaded movesets given an array of numbers
    */
 
-  std::vector<pokemon_species::Species> EngineData::CreatePokemonTeam(std::vector<size_t> indices);
+  std::vector<pokemon_species::Species*> EngineData::CreatePokemonTeam(std::vector<size_t> indices);
 
   std::string EngineData::GetMessage();
 
@@ -149,7 +149,7 @@ class EngineData {
 
   //All of the possible pokemon that a player can have
 
-  std::vector<pokemon_species::Species> all_pokemon_list;
+  std::vector<pokemon_species::Species*> all_pokemon_list;
 
   //The human player
 

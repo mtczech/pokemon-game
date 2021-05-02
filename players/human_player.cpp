@@ -7,28 +7,28 @@
 
 #include <iostream>
 
-HumanPlayer::HumanPlayer(std::vector<pokemon_species::Species> starting_pokemon) {
+HumanPlayer::HumanPlayer(std::vector<pokemon_species::Species*> starting_pokemon) {
   ready_pokemon_ = starting_pokemon;
 }
 
 HumanPlayer::HumanPlayer() {
 }
 
-void HumanPlayer::SetPokemonTeam(std::vector<pokemon_species::Species> team) {
+void HumanPlayer::SetPokemonTeam(std::vector<pokemon_species::Species*> team) {
   ready_pokemon_ = team;
 }
 
 void HumanPlayer::SendOutFirstPokemon(size_t starting_pokemon_index) {
-  pokemon_species::Species& starter = ready_pokemon_.at(starting_pokemon_index);
+  pokemon_species::Species* starter = ready_pokemon_.at(starting_pokemon_index);
   currently_in_battle_ = starter;
   ready_pokemon_.erase(ready_pokemon_.begin() + starting_pokemon_index);
 }
 
-std::vector<pokemon_species::Species> HumanPlayer::GetReadyPokemon() {
+std::vector<pokemon_species::Species*> HumanPlayer::GetReadyPokemon() {
   return ready_pokemon_;
 }
 
-pokemon_species::Species& HumanPlayer::GetCurrentlyInBattle() {
+pokemon_species::Species* HumanPlayer::GetCurrentlyInBattle() {
   return currently_in_battle_;
 }
 
@@ -45,7 +45,7 @@ void HumanPlayer::RemoveRocks() {
 }
 
 bool HumanPlayer::CheckIfPokemonFainted() {
-  if (currently_in_battle_.current_hp_ <= 0) {
+  if (currently_in_battle_->current_hp_ <= 0) {
     fainted_pokemon_.push_back(currently_in_battle_);
     if (ready_pokemon_.size() != 0) {
       int r = rand() % ready_pokemon_.size();
@@ -57,3 +57,10 @@ bool HumanPlayer::CheckIfPokemonFainted() {
   return false;
 }
 
+bool HumanPlayer::GetHasRocks() {
+  return has_rocks_;
+}
+
+std::vector<pokemon_species::Species*> HumanPlayer::GetFaintedPokemon() {
+  return fainted_pokemon_;
+}

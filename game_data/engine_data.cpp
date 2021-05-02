@@ -34,8 +34,8 @@ EngineData::EngineData(std::string move_json_path, std::string species_json_path
   json pokemon_species_json;
   pokemon_file_input >> pokemon_species_json;
   for (auto& pokemon : pokemon_species_json.at("pokemon")) {
-    pokemon_species::Species species = pokemon_species::Species();
-    species.from_json(pokemon, species);
+    pokemon_species::Species* species = new pokemon_species::Species();
+    species->from_json(pokemon, (*species));
     all_pokemon_list.push_back(species);
   }
   //Uses the third json to map the pokemon to their movesets
@@ -43,10 +43,10 @@ EngineData::EngineData(std::string move_json_path, std::string species_json_path
   json pokemon_set_json;
   set_file_input >> pokemon_set_json;
   for (auto& set : pokemon_set_json.at("pokemon_sets")) {
-    for (pokemon_species::Species& p : all_pokemon_list) {
-      if (p.species_name_ == set.at("pokemon_name")) {
+    for (pokemon_species::Species* p : all_pokemon_list) {
+      if (p->species_name_ == set.at("pokemon_name")) {
         for (auto& move_name : set.at("moves")) {
-          p.moves_.push_back(FindMove(move_name.at("name")));
+          p->moves_.push_back(FindMove(move_name.at("name")));
         }
       }
     }
@@ -69,14 +69,14 @@ EngineData::EngineData(std::string move_json_path, std::string species_json_path
   type_matrix_ = std::unordered_map<std::string, std::unordered_map<std::string, float>>();
   SetUpTypeMatrix();
   human_player.SendOutFirstPokemon(FindLeadIndex(human_player.GetReadyPokemon()));
-  computer_player.SendOutFirstPokemon(FindLeadIndex(computer_player.GetReadyPokemon()));
+  computer_player.SendOutFirstPokemon(FindLeadIndex((computer_player.GetReadyPokemon())));
   std::cout << "test" << std::endl;
 }
 
 //n^4 complexity, glad my input sets are relatively small
 //There is a better way, I'm sure
 
-std::vector<pokemon_species::Species> EngineData::GetAllPokemonList() {
+std::vector<pokemon_species::Species*> EngineData::GetAllPokemonList() {
   return all_pokemon_list;
 }
 
@@ -94,8 +94,8 @@ pokemon_move::Move EngineData::FindMove(const std::string move_name) {
   throw "Program should not get to here";
 }
 
-std::vector<pokemon_species::Species> EngineData::CreatePokemonTeam(std::vector<size_t> indices) {
-  std::vector<pokemon_species::Species> pokemon_team;
+std::vector<pokemon_species::Species*> EngineData::CreatePokemonTeam(std::vector<size_t> indices) {
+  std::vector<pokemon_species::Species*> pokemon_team;
   for (size_t& index : indices) {
     pokemon_team.push_back(all_pokemon_list.at(index));
   }
@@ -136,9 +136,9 @@ ComputerPlayer EngineData::GetComputerPlayer() {
   return computer_player;
 }
 
-size_t EngineData::FindLeadIndex(std::vector<pokemon_species::Species> v) {
+size_t EngineData::FindLeadIndex(std::vector<pokemon_species::Species*> v) {
   for (size_t i = 0; i < v.size(); i++) {
-    for (pokemon_move::Move m : v.at(i).moves_) {
+    for (pokemon_move::Move m : v.at(i)->moves_) {
       if (m.name_ == "stealth-rock") {
         return i;
       }
@@ -275,7 +275,9 @@ float EngineData::GetTypeMultiplier(pokemon_species::Species defending,
                                     pokemon_move::Move attack) {
   float type_multiplier = 1;
   for (std::string type : defending.types_) {
-    type_multiplier *= type_matrix_.at(attack.type_).at(type);
+    if (type_matrix_.at(type).count(attack.type_)) {
+      type_multiplier *= type_matrix_.at(type).at(attack.type_);
+    }
   }
   return type_multiplier;
 }
@@ -289,7 +291,7 @@ void EngineData::AddEffects(pokemon_species::Species& attacking,
                             pokemon_species::Species& defending, pokemon_move::Move& move) {
   //As much as I would love to do a switch function here, you cannot do it with strings in c++
   if (move.category_name_ == "field-effect"
-      && attacking.species_name_ == human_player.GetCurrentlyInBattle().species_name_) {
+      && attacking.species_name_ == human_player.GetCurrentlyInBattle()->species_name_) {
     computer_player.SetRocks();
     message_ = "Rocks are ready to dig into opposing Pokemon!";
   } else if (move.category_name_ == "field-effect") {
@@ -327,37 +329,38 @@ void EngineData::AddEffects(pokemon_species::Species& attacking,
 
 void EngineData::CheckIfGameOver() {
   if (human_player.GetReadyPokemon().size() == 0 &&
-      human_player.GetCurrentlyInBattle().current_hp_ <= 0) {
+      human_player.GetCurrentlyInBattle()->current_hp_ <= 0) {
     message_ = "Game over, better luck next time";
     is_game_over_ = true;
   } else if (computer_player.GetReadyPokemon().size() == 0 &&
-             computer_player.GetCurrentlyInBattle().current_hp_ == 0) {
+             computer_player.GetCurrentlyInBattle()->current_hp_ == 0) {
     message_ = "Congratulations! You are the Pokemon League Champion!";
     is_game_over_ = true;
   }
 }
 
 bool EngineData::HumanGoesFirst(pokemon_move::Move human_move, pokemon_move::Move computer_move) {
-  AdjustStats(human_player.GetCurrentlyInBattle());
-  AdjustStats(computer_player.GetCurrentlyInBattle());
+  AdjustStats((*human_player.GetCurrentlyInBattle()));
+  AdjustStats((*computer_player.GetCurrentlyInBattle()));
   if (human_move.priority_ > computer_move.priority_) {
     return true;
   } else if (computer_move.priority_ > human_move.priority_) {
     return false;
   }
-  bool returned = human_player.GetCurrentlyInBattle().other_stats_.at("speed")
-                  >= computer_player.GetCurrentlyInBattle().other_stats_.at("speed");
-  SetStatsBack(human_player.GetCurrentlyInBattle());
-  SetStatsBack(computer_player.GetCurrentlyInBattle());
+  bool returned = human_player.GetCurrentlyInBattle()->other_stats_.at("speed")
+                  >= computer_player.GetCurrentlyInBattle()->other_stats_.at("speed");
+  SetStatsBack((*human_player.GetCurrentlyInBattle()));
+  SetStatsBack((*computer_player.GetCurrentlyInBattle()));
   return returned;
 }
 
 size_t EngineData::FindBestComputerMove() {
   size_t best_move_index = 0;
   size_t damage_dealt_by_best_move = 0;
-  for (size_t i = 0; i < computer_player.GetCurrentlyInBattle().moves_.size(); i++) {
-    size_t damage = CalculateDamageDealt(computer_player.GetCurrentlyInBattle(),
-          computer_player.GetCurrentlyInBattle().moves_.at(i), human_player.GetCurrentlyInBattle());
+  for (size_t i = 0; i < computer_player.GetCurrentlyInBattle()->moves_.size(); i++) {
+    size_t damage = CalculateDamageDealt(*(computer_player.GetCurrentlyInBattle()),
+          computer_player.GetCurrentlyInBattle()->moves_.at(i),
+                                         (*human_player.GetCurrentlyInBattle()));
     if (damage >= damage_dealt_by_best_move) {
       best_move_index = i;
       damage_dealt_by_best_move = damage;

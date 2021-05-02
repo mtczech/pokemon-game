@@ -14,20 +14,22 @@ class HumanPlayer {
 
   HumanPlayer();
 
-  HumanPlayer(std::vector<pokemon_species::Species>);
+  HumanPlayer(std::vector<pokemon_species::Species*>);
 
   /**
    * Function for setting up the player's pokemon team
    * @param team the pokemon being put into the player's party
    */
 
-  void HumanPlayer::SetPokemonTeam(std::vector<pokemon_species::Species> team);
+  void HumanPlayer::SetPokemonTeam(std::vector<pokemon_species::Species*> team);
 
   void HumanPlayer::SendOutFirstPokemon(size_t starting_pokemon_index);
 
-  std::vector<pokemon_species::Species> HumanPlayer::GetReadyPokemon();
+  std::vector<pokemon_species::Species*> HumanPlayer::GetReadyPokemon();
 
-  pokemon_species::Species& HumanPlayer::GetCurrentlyInBattle();
+  pokemon_species::Species* HumanPlayer::GetCurrentlyInBattle();
+
+  std::vector<pokemon_species::Species*> HumanPlayer::GetFaintedPokemon();
 
   /**
    * Sets up stealth rock
@@ -43,13 +45,15 @@ class HumanPlayer {
 
   bool HumanPlayer::CheckIfPokemonFainted();
 
+  bool HumanPlayer::GetHasRocks();
+
  private:
   //The pokemon that the player has remaining
-  std::vector<pokemon_species::Species> ready_pokemon_;
+  std::vector<pokemon_species::Species*> ready_pokemon_;
 
-  pokemon_species::Species currently_in_battle_;
+  pokemon_species::Species* currently_in_battle_;
 
-  std::vector<pokemon_species::Species> fainted_pokemon_;
+  std::vector<pokemon_species::Species*> fainted_pokemon_;
 
   bool has_rocks_ = false;
 };

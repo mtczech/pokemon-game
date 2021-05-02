@@ -14,15 +14,17 @@ class ComputerPlayer {
 
   ComputerPlayer();
 
-  ComputerPlayer(std::vector<pokemon_species::Species> starting_pokemon);
+  ComputerPlayer(std::vector<pokemon_species::Species*> starting_pokemon);
 
-  void ComputerPlayer::SetPokemonTeam(std::vector<pokemon_species::Species> team);
+  void ComputerPlayer::SetPokemonTeam(std::vector<pokemon_species::Species*> team);
 
   void ComputerPlayer::SendOutFirstPokemon(size_t starting_pokemon_index);
 
-  pokemon_species::Species& ComputerPlayer::GetCurrentlyInBattle();
+  pokemon_species::Species* ComputerPlayer::GetCurrentlyInBattle();
 
-  std::vector<pokemon_species::Species> ComputerPlayer::GetReadyPokemon();
+  std::vector<pokemon_species::Species*> ComputerPlayer::GetReadyPokemon();
+
+  std::vector<pokemon_species::Species*> ComputerPlayer::GetFaintedPokemon();
 
   /**
    * Sets up stealth rock on the computer's side of the field
@@ -42,13 +44,15 @@ class ComputerPlayer {
 
   bool ComputerPlayer::CheckIfPokemonFainted();
 
+  bool ComputerPlayer::GetHasRocks();
+
  private:
   //The pokemon that the computer player has remaining
-  std::vector<pokemon_species::Species> ready_pokemon_;
+  std::vector<pokemon_species::Species*> ready_pokemon_;
 
-  pokemon_species::Species currently_in_battle_;
+  pokemon_species::Species* currently_in_battle_;
 
-  std::vector<pokemon_species::Species> fainted_pokemon_;
+  std::vector<pokemon_species::Species*> fainted_pokemon_;
 
   bool has_rocks_ = false;
 };
