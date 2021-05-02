@@ -36,9 +36,9 @@ class EngineData {
 
   pokemon_move::Move EngineData::FindMove(const std::string move_name);
 
-  HumanPlayer EngineData::GetHumanPlayer();
+  HumanPlayer& EngineData::GetHumanPlayer();
 
-  ComputerPlayer EngineData::GetComputerPlayer();
+  ComputerPlayer& EngineData::GetComputerPlayer();
 
   std::unordered_map<std::string, std::unordered_map<std::string, float>>
   EngineData::GetTypeMatrix();

@@ -66,22 +66,6 @@ class PokemonEngineInterface : public ci::app::App {
 
   std::string message_ = "Your pokemon are on the left, the computer pokemon are on the right \n";
 
-  //User current pokemon, for convenience
-
-  pokemon_species::Species* user_pokemon_;
-
-  //Computer current pokemon, for convenience
-
-  pokemon_species::Species* computer_pokemon_;
-
-  //User's unfainted pokemon, for convenience
-
-  std::vector<pokemon_species::Species*> user_ready_pokemon_;
-
-  //Computer's unfainted pokemon
-
-  std::vector<pokemon_species::Species*> computer_ready_pokemon_;
-
   //Time between message changes, in order to allow the user to read them
 
   size_t kTimeBetweenMessages = 5000;

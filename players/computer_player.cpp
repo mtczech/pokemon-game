@@ -42,16 +42,7 @@ void ComputerPlayer::RemoveRocks() {
 }
 
 bool ComputerPlayer::CheckIfPokemonFainted() {
-  if (currently_in_battle_->current_hp_ <= 0) {
-    fainted_pokemon_.push_back(currently_in_battle_);
-    if (ready_pokemon_.size() != 0) {
-      int r = rand() % ready_pokemon_.size();
-      currently_in_battle_ = ready_pokemon_.at(r);
-      ready_pokemon_.erase(ready_pokemon_.begin() + r);
-    }
-    return true;
-  }
-  return false;
+  return currently_in_battle_->current_hp_ <= 0;
 }
 
 bool ComputerPlayer::GetHasRocks() {
@@ -60,4 +51,16 @@ bool ComputerPlayer::GetHasRocks() {
 
 std::vector<pokemon_species::Species *> ComputerPlayer::GetFaintedPokemon() {
   return fainted_pokemon_;
+}
+
+void ComputerPlayer::DetermineCurrentlyInBattle() {
+  if (currently_in_battle_->current_hp_ <= 0 && ready_pokemon_.size() != 0) {
+    int r = rand() % ready_pokemon_.size();
+    currently_in_battle_ = nullptr;
+    SendOutFirstPokemon(r);
+  }
+}
+
+void ComputerPlayer::SetCurrentlyInBattle(pokemon_species::Species* pokemon) {
+  currently_in_battle_ = pokemon;
 }

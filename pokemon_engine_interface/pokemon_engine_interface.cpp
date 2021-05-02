@@ -9,27 +9,23 @@ pokemon_interface::PokemonEngineInterface::PokemonEngineInterface() {
   engine_data_ = EngineData("C:\\Cinder\\cinder_0.9.2_vc2015\\cinder_0.9.2_vc2015\\my-projects\\final-project-mtczech\\necessary_json_data\\json_for_all_moves.json",
                             "C:\\Cinder\\cinder_0.9.2_vc2015\\cinder_0.9.2_vc2015\\my-projects\\final-project-mtczech\\necessary_json_data\\json_for_all_pokemon.json",
                             "C:\\Cinder\\cinder_0.9.2_vc2015\\cinder_0.9.2_vc2015\\my-projects\\final-project-mtczech\\necessary_json_data\\pokemon_sets_json.json");
-  computer_pokemon_ = engine_data_.GetComputerPlayer().GetCurrentlyInBattle();
-  user_pokemon_ = engine_data_.GetComputerPlayer().GetCurrentlyInBattle();
 }
 
 void pokemon_interface::PokemonEngineInterface::draw() {
   ci::Color("white");
   ci::gl::drawSolidRect(ci::Rectf (ci::vec2(0, 0), ci::vec2(650, 100)));
   ci::gl::drawString(message_, ci::vec2(0, 0), ci::Color("black"), ci::Font("Verdana", 20));
-  DrawPokemon((*user_pokemon_), kUserPokemonArea);
-  DrawPokemon((*computer_pokemon_), kComputerPokemonArea);
-  DrawPokemonHealth((*user_pokemon_), ci::vec2(0, 200));
-  DrawPokemonHealth((*computer_pokemon_), ci::vec2(325, 200));
-  WritePokemonNames(user_ready_pokemon_, ci::vec2(0, 110));
-  WritePokemonNames(computer_ready_pokemon_, ci::vec2(470, 110));
+  DrawPokemon((*engine_data_.GetHumanPlayer().GetCurrentlyInBattle()), kUserPokemonArea);
+  DrawPokemon((*engine_data_.GetComputerPlayer().GetCurrentlyInBattle()), kComputerPokemonArea);
+  DrawPokemonHealth((*engine_data_.GetHumanPlayer().GetCurrentlyInBattle()), ci::vec2(0, 200));
+  DrawPokemonHealth((*engine_data_.GetComputerPlayer().GetCurrentlyInBattle()),
+                    ci::vec2(325, 200));
+  WritePokemonNames(engine_data_.GetHumanPlayer().GetReadyPokemon(), ci::vec2(0, 110));
+  WritePokemonNames(engine_data_.GetComputerPlayer().GetReadyPokemon(), ci::vec2(470, 110));
 }
 
 void pokemon_interface::PokemonEngineInterface::update() {
-  user_pokemon_ = engine_data_.GetHumanPlayer().GetCurrentlyInBattle();
-  computer_pokemon_ = engine_data_.GetComputerPlayer().GetCurrentlyInBattle();
-  user_ready_pokemon_ = engine_data_.GetHumanPlayer().GetReadyPokemon();
-  computer_ready_pokemon_ = engine_data_.GetComputerPlayer().GetReadyPokemon();
+
 }
 
 void pokemon_interface::PokemonEngineInterface::DrawPokemon(
@@ -42,7 +38,9 @@ void pokemon_interface::PokemonEngineInterface::DrawPokemon(
 void pokemon_interface::PokemonEngineInterface::keyDown(ci::app::KeyEvent event) {
   switch (event.getChar()) {
     case '0':;
-      ExecuteMove(0, user_pokemon_, computer_pokemon_);
+      ExecuteMove(0, engine_data_.GetHumanPlayer().GetCurrentlyInBattle(),
+                  engine_data_.GetComputerPlayer().GetCurrentlyInBattle());
+      engine_data_.GetComputerPlayer().DetermineCurrentlyInBattle();
       update();
   }
 }
@@ -50,6 +48,7 @@ void pokemon_interface::PokemonEngineInterface::keyDown(ci::app::KeyEvent event)
 void pokemon_interface::PokemonEngineInterface::DrawPokemonHealth(
     pokemon_species::Species creature, ci::vec2 position) {
   ci::Color hp_color;
+  ci::gl::drawSolidRect(ci::Rectf(position, ci::vec2(position.x + 325, position.y + 80)));
   if (float ((creature.current_hp_) / float (creature.hp_)) < 0.2) {
     hp_color = ci::Color("red");
   } else if (float ((creature.current_hp_) / float (creature.hp_)) < 0.5) {
@@ -87,15 +86,12 @@ void pokemon_interface::PokemonEngineInterface::ExecuteMove(
     engine_data_.SetStatsBack(*attacking);
     engine_data_.SetStatsBack(*defending);
     engine_data_.AddEffects(*attacking, *defending, attacking->moves_.at(input));
-    if (engine_data_.GetHumanPlayer().CheckIfPokemonFainted() &&
-        engine_data_.GetHumanPlayer().GetHasRocks()) {
+    bool temp = engine_data_.GetHumanPlayer().CheckIfPokemonFainted();
+    if (temp && engine_data_.GetHumanPlayer().GetHasRocks()) {
       engine_data_.DealStealthRockDamage((*engine_data_.GetHumanPlayer().GetCurrentlyInBattle()));
     }
-    if (engine_data_.GetComputerPlayer().CheckIfPokemonFainted() &&
-        engine_data_.GetComputerPlayer().GetHasRocks()) {
-      engine_data_.DealStealthRockDamage((*engine_data_.GetComputerPlayer().GetCurrentlyInBattle()));
-    }
   }
+  update();
 }
 
 void pokemon_interface::PokemonEngineInterface::EndGame() {

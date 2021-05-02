@@ -46,6 +46,10 @@ class ComputerPlayer {
 
   bool ComputerPlayer::GetHasRocks();
 
+  void ComputerPlayer::DetermineCurrentlyInBattle();
+
+  void ComputerPlayer::SetCurrentlyInBattle(pokemon_species::Species* pokemon);
+
  private:
   //The pokemon that the computer player has remaining
   std::vector<pokemon_species::Species*> ready_pokemon_;

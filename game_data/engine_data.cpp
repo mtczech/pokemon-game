@@ -128,11 +128,11 @@ void EngineData::SetUpTypeMatrix() {
   }
 }
 
-HumanPlayer EngineData::GetHumanPlayer() {
+HumanPlayer& EngineData::GetHumanPlayer() {
   return human_player;
 }
 
-ComputerPlayer EngineData::GetComputerPlayer() {
+ComputerPlayer& EngineData::GetComputerPlayer() {
   return computer_player;
 }
 
