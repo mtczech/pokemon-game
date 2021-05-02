@@ -69,6 +69,9 @@ void pokemon_interface::PokemonEngineInterface::WritePokemonNames(
 
 void pokemon_interface::PokemonEngineInterface::ExecuteMove(
     size_t input, pokemon_species::Species& attacking, pokemon_species::Species& defending) {
+  if (engine_data_.GetIsGameOver()) {
+    return;
+  }
   if (engine_data_.CheckIfMoveHits(attacking, attacking.moves_.at(input))) {
     engine_data_.AdjustStats(attacking);
     engine_data_.AdjustStats(defending);

@@ -40,7 +40,7 @@ class ComputerPlayer {
    * Checks if the current pokemon is fainted for the computer player
    */
 
-  void ComputerPlayer::CheckIfPokemonFainted();
+  bool ComputerPlayer::CheckIfPokemonFainted();
 
  private:
   //The pokemon that the computer player has remaining

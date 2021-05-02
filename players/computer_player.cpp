@@ -41,7 +41,7 @@ void ComputerPlayer::RemoveRocks() {
   }
 }
 
-void ComputerPlayer::CheckIfPokemonFainted() {
+bool ComputerPlayer::CheckIfPokemonFainted() {
   if (currently_in_battle_.current_hp_ <= 0) {
     fainted_pokemon_.push_back(currently_in_battle_);
     if (ready_pokemon_.size() != 0) {
@@ -49,5 +49,7 @@ void ComputerPlayer::CheckIfPokemonFainted() {
       currently_in_battle_ = ready_pokemon_.at(r);
       ready_pokemon_.erase(ready_pokemon_.begin() + r);
     }
+    return true;
   }
+  return false;
 }
