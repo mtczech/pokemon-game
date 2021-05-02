@@ -133,6 +133,14 @@ class EngineData {
 
   size_t EngineData::FindBestComputerMove();
 
+  bool EngineData::GetIsGameOver();
+
+  /**
+   * Function for determining how much damage Stealth Rock deals and dealing said damage
+   */
+
+  void EngineData::DealStealthRockDamage(pokemon_species::Species& damage_recipient);
+
  private:
 
   //All of the moves in the game

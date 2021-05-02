@@ -66,3 +66,23 @@ void pokemon_interface::PokemonEngineInterface::WritePokemonNames(
   }
   ci::gl::drawString(message, position, ci::Color("white"), ci::Font("Verdana", 20));
 }
+
+void pokemon_interface::PokemonEngineInterface::ExecuteMove(
+    size_t input, pokemon_species::Species& attacking, pokemon_species::Species& defending) {
+  if (engine_data_.CheckIfMoveHits(attacking, attacking.moves_.at(input))) {
+    engine_data_.AdjustStats(attacking);
+    engine_data_.AdjustStats(defending);
+    defending.current_hp_ = std::max(0, defending.current_hp_ -= engine_data_.CalculateDamageDealt(
+        attacking, attacking.moves_.at(input), defending));
+    system("pause");
+    engine_data_.CheckIfGameOver();
+    if (engine_data_.GetIsGameOver()) {
+      return;
+    }
+    engine_data_.SetStatsBack(attacking);
+    engine_data_.SetStatsBack(defending);
+    engine_data_.AddEffects(attacking, defending, attacking.moves_.at(input));
+    engine_data_.GetHumanPlayer().CheckIfPokemonFainted();
+    engine_data_.GetComputerPlayer().CheckIfPokemonFainted();
+  }
+}

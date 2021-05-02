@@ -44,6 +44,9 @@ class PokemonEngineInterface : public ci::app::App {
   void PokemonEngineInterface::WritePokemonNames(
       std::vector<pokemon_species::Species> creatures, ci::vec2 position);
 
+  void PokemonEngineInterface::ExecuteMove(size_t input, pokemon_species::Species& attacking,
+                                           pokemon_species::Species& defending);
+
  private:
   EngineData engine_data_;
 

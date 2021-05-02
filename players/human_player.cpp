@@ -54,3 +54,4 @@ void HumanPlayer::CheckIfPokemonFainted() {
     }
   }
 }
+

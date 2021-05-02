@@ -365,3 +365,21 @@ size_t EngineData::FindBestComputerMove() {
   }
   return best_move_index;
 }
+
+bool EngineData::GetIsGameOver() {
+  return is_game_over_;
+}
+
+void EngineData::DealStealthRockDamage(pokemon_species::Species& damage_recipient) {
+  float damage_multiplier = 0.125;
+  for (std::string& type : damage_recipient.types_) {
+    if (type_matrix_.at("rock").find(type) != type_matrix_.at("rock").end()) {
+      damage_multiplier *= type_matrix_.at("rock").at(type);
+    }
+  }
+  int hp_after_damage = damage_recipient.current_hp_ -
+                        int (std::ceil(float (damage_recipient.hp_) * damage_multiplier));
+  damage_recipient.current_hp_ = std::max(0, hp_after_damage);
+  human_player.CheckIfPokemonFainted();
+  computer_player.CheckIfPokemonFainted();
+}
