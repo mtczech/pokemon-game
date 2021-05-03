@@ -43,9 +43,11 @@ class HumanPlayer {
 
   void HumanPlayer::RemoveRocks();
 
-  bool HumanPlayer::CheckIfPokemonFainted();
+  void HumanPlayer::CheckIfPokemonFainted();
 
   bool HumanPlayer::GetHasRocks();
+
+  void HumanPlayer::SwitchPokemon(size_t pokemon_index);
 
  private:
   //The pokemon that the player has remaining

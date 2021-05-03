@@ -44,7 +44,7 @@ void HumanPlayer::RemoveRocks() {
   }
 }
 
-bool HumanPlayer::CheckIfPokemonFainted() {
+void HumanPlayer::CheckIfPokemonFainted() {
   if (currently_in_battle_->current_hp_ <= 0) {
     fainted_pokemon_.push_back(currently_in_battle_);
     if (ready_pokemon_.size() != 0) {
@@ -53,9 +53,7 @@ bool HumanPlayer::CheckIfPokemonFainted() {
       currently_in_battle_ = ready_pokemon_.at(r);
       ready_pokemon_.erase(ready_pokemon_.begin() + r);
     }
-    return true;
   }
-  return false;
 }
 
 bool HumanPlayer::GetHasRocks() {
@@ -64,4 +62,17 @@ bool HumanPlayer::GetHasRocks() {
 
 std::vector<pokemon_species::Species*> HumanPlayer::GetFaintedPokemon() {
   return fainted_pokemon_;
+}
+
+void HumanPlayer::SwitchPokemon(size_t pokemon_index) {
+  if (ready_pokemon_.size() > pokemon_index) {
+    pokemon_species::Species* switched_out_pokemon = currently_in_battle_;
+    currently_in_battle_ = nullptr;
+    SendOutFirstPokemon(pokemon_index);
+    std::cout << "You switched out " << switched_out_pokemon->species_name_ << " for " <<
+        currently_in_battle_->species_name_ << std::endl;
+    ready_pokemon_.push_back(switched_out_pokemon);
+  } else {
+    std::cout << "You do not have that pokemon ready" << std::endl;
+  }
 }

@@ -35,6 +35,12 @@ void pokemon_interface::PokemonEngineInterface::update() {
       message_ += "\n";
     }
   }
+  for (size_t i = engine_data_.GetHumanPlayer().GetCurrentlyInBattle()->moves_.size();
+       i < engine_data_.GetHumanPlayer().GetCurrentlyInBattle()->moves_.size() +
+               engine_data_.GetHumanPlayer().GetReadyPokemon().size(); i++) {
+    message_ += "Press " + std::to_string(i) + " to send in " +
+                engine_data_.GetHumanPlayer().GetReadyPokemon().at(i - 4)->species_name_;
+  }
 }
 
 void pokemon_interface::PokemonEngineInterface::DrawPokemon(
@@ -49,6 +55,7 @@ void pokemon_interface::PokemonEngineInterface::DrawPokemon(
 
 void pokemon_interface::PokemonEngineInterface::keyDown(ci::app::KeyEvent event) {
   size_t computer_move_index = engine_data_.FindBestComputerMove();
+  pokemon_species::Species* defender = engine_data_.GetHumanPlayer().GetCurrentlyInBattle();
   switch (event.getChar()) {
     case '0':
       RunFullTurn(0, computer_move_index);
@@ -61,6 +68,39 @@ void pokemon_interface::PokemonEngineInterface::keyDown(ci::app::KeyEvent event)
       break;
     case '3':
       RunFullTurn(3, computer_move_index);
+      break;
+    case '4':
+      engine_data_.GetHumanPlayer().SwitchPokemon(0);
+      if (engine_data_.GetHumanPlayer().GetHasRocks()) {
+        engine_data_.DealStealthRockDamage(*engine_data_.GetHumanPlayer().GetCurrentlyInBattle());
+      }
+      ExecuteMove(computer_move_index, engine_data_.GetComputerPlayer().GetCurrentlyInBattle(),
+                  engine_data_.GetHumanPlayer().GetCurrentlyInBattle());
+      engine_data_.GetComputerPlayer().DetermineCurrentlyInBattle();
+      break;
+    case '5':
+      engine_data_.GetHumanPlayer().SwitchPokemon(1);
+      if (engine_data_.GetHumanPlayer().GetHasRocks()) {
+        engine_data_.DealStealthRockDamage(*engine_data_.GetHumanPlayer().GetCurrentlyInBattle());
+      }
+      ExecuteMove(computer_move_index, engine_data_.GetComputerPlayer().GetCurrentlyInBattle(),
+                  engine_data_.GetHumanPlayer().GetCurrentlyInBattle());
+      break;
+    case '6':
+      engine_data_.GetHumanPlayer().SwitchPokemon(2);
+      if (engine_data_.GetHumanPlayer().GetHasRocks()) {
+        engine_data_.DealStealthRockDamage(*engine_data_.GetHumanPlayer().GetCurrentlyInBattle());
+      }
+      ExecuteMove(computer_move_index, engine_data_.GetComputerPlayer().GetCurrentlyInBattle(),
+                  engine_data_.GetHumanPlayer().GetCurrentlyInBattle());
+      break;
+    case '7':
+      engine_data_.GetHumanPlayer().SwitchPokemon(3);
+      if (engine_data_.GetHumanPlayer().GetHasRocks()) {
+        engine_data_.DealStealthRockDamage(*engine_data_.GetHumanPlayer().GetCurrentlyInBattle());
+      }
+      ExecuteMove(computer_move_index, engine_data_.GetComputerPlayer().GetCurrentlyInBattle(),
+                  engine_data_.GetHumanPlayer().GetCurrentlyInBattle());
       break;
   }
   update();
@@ -97,6 +137,7 @@ void pokemon_interface::PokemonEngineInterface::WritePokemonNames(
 
 void pokemon_interface::PokemonEngineInterface::ExecuteMove(
     size_t input, pokemon_species::Species* attacking, pokemon_species::Species* defending) {
+  std::cout << attacking->species_name_ << " used " << attacking->moves_.at(input).name_ << std::endl;
   if (engine_data_.GetIsGameOver()) {
     return;
   }
@@ -118,10 +159,7 @@ void pokemon_interface::PokemonEngineInterface::ExecuteMove(
     engine_data_.SetStatsBack(*attacking);
     engine_data_.SetStatsBack(*defending);
     engine_data_.AddEffects(*attacking, *defending, attacking->moves_.at(input));
-    bool temp = engine_data_.GetHumanPlayer().CheckIfPokemonFainted();
-    if (temp && engine_data_.GetHumanPlayer().GetHasRocks()) {
-      engine_data_.DealStealthRockDamage((*engine_data_.GetHumanPlayer().GetCurrentlyInBattle()));
-    }
+    engine_data_.GetHumanPlayer().CheckIfPokemonFainted();
   }
   update();
 }
@@ -142,26 +180,30 @@ void pokemon_interface::PokemonEngineInterface::RunFullTurn(size_t user_move_ind
   pokemon_species::Species* cpu_current_pokemon =
       engine_data_.GetComputerPlayer().GetCurrentlyInBattle();
   if (engine_data_.HumanGoesFirst(user_move, cpu_move)) {
-    std::cout << user_current_pokemon->species_name_ << " used " << user_move.name_ << std::endl;
     ExecuteMove(user_move_index, engine_data_.GetHumanPlayer().GetCurrentlyInBattle(),
                 engine_data_.GetComputerPlayer().GetCurrentlyInBattle());
     if (engine_data_.GetComputerPlayer().GetCurrentlyInBattle()->current_hp_ > 0 &&
         engine_data_.GetComputerPlayer().GetCurrentlyInBattle() == cpu_current_pokemon) {
-      std::cout << cpu_current_pokemon->species_name_ << " used " << cpu_move.name_ << std::endl;
       ExecuteMove(cpu_move_index, engine_data_.GetComputerPlayer().GetCurrentlyInBattle(),
                   engine_data_.GetHumanPlayer().GetCurrentlyInBattle());
     }
     engine_data_.GetComputerPlayer().DetermineCurrentlyInBattle();
+    if (engine_data_.GetComputerPlayer().GetHasRocks() &&
+        engine_data_.GetComputerPlayer().GetCurrentlyInBattle() != cpu_current_pokemon) {
+      engine_data_.DealStealthRockDamage(*engine_data_.GetComputerPlayer().GetCurrentlyInBattle());
+    }
   } else {
-    std::cout << cpu_current_pokemon->species_name_ << " used " << cpu_move.name_ << std::endl;
     ExecuteMove(cpu_move_index, engine_data_.GetComputerPlayer().GetCurrentlyInBattle(),
                 engine_data_.GetHumanPlayer().GetCurrentlyInBattle());
     if (engine_data_.GetHumanPlayer().GetCurrentlyInBattle()->current_hp_ > 0 &&
         engine_data_.GetHumanPlayer().GetCurrentlyInBattle() == user_current_pokemon) {
-      std::cout << user_current_pokemon->species_name_ << " used " << user_move.name_ << std::endl;
       ExecuteMove(user_move_index, engine_data_.GetHumanPlayer().GetCurrentlyInBattle(),
                   engine_data_.GetComputerPlayer().GetCurrentlyInBattle());
     }
     engine_data_.GetComputerPlayer().DetermineCurrentlyInBattle();
+    if (engine_data_.GetComputerPlayer().GetHasRocks() &&
+        engine_data_.GetComputerPlayer().GetCurrentlyInBattle() != cpu_current_pokemon) {
+      engine_data_.DealStealthRockDamage(*engine_data_.GetComputerPlayer().GetCurrentlyInBattle());
+    }
   }
 }

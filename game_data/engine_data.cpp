@@ -391,8 +391,8 @@ bool EngineData::GetIsGameOver() {
 void EngineData::DealStealthRockDamage(pokemon_species::Species& damage_recipient) {
   float damage_multiplier = 0.125;
   for (std::string& type : damage_recipient.types_) {
-    if (type_matrix_.at("rock").find(type) != type_matrix_.at("rock").end()) {
-      damage_multiplier *= type_matrix_.at("rock").at(type);
+    if (type_matrix_.at(type).find("rock") != type_matrix_.at(type).end()) {
+      damage_multiplier *= type_matrix_.at(type).at("rock");
     }
   }
   int damage_dealt = int (std::ceil(float (damage_recipient.hp_) * damage_multiplier));

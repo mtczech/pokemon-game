@@ -49,7 +49,7 @@ bool ComputerPlayer::GetHasRocks() {
   return has_rocks_;
 }
 
-std::vector<pokemon_species::Species *> ComputerPlayer::GetFaintedPokemon() {
+std::vector<pokemon_species::Species*> ComputerPlayer::GetFaintedPokemon() {
   return fainted_pokemon_;
 }
 
