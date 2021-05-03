@@ -14,6 +14,9 @@
 
 #endif  // FINAL_PROJECT_MTCZECH_POKEMON_ENGINE_INTERFACE_H
 
+#include <string>
+#include <iostream>
+
 
 
 namespace pokemon_interface {
@@ -67,10 +70,6 @@ class PokemonEngineInterface : public ci::app::App {
   //display messages on the console with Cinder
 
   std::string message_ = "Your pokemon are on the left, the computer pokemon are on the right \n";
-
-  //Time between message changes, in order to allow the user to read them
-
-  size_t kTimeBetweenMessages = 5000;
 };
 
 }  // namespace pokemon_interface

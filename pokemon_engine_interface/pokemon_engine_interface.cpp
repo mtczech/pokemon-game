@@ -4,6 +4,8 @@
 
 #include "pokemon_engine_interface.h"
 #include "cinder/gl/Texture.h"
+#include <iostream>
+#include <string>
 
 pokemon_interface::PokemonEngineInterface::PokemonEngineInterface() {
   engine_data_ = EngineData("C:\\Cinder\\cinder_0.9.2_vc2015\\cinder_0.9.2_vc2015\\my-projects\\final-project-mtczech\\necessary_json_data\\json_for_all_moves.json",
@@ -101,10 +103,14 @@ void pokemon_interface::PokemonEngineInterface::ExecuteMove(
   if (engine_data_.CheckIfMoveHits((*attacking), attacking->moves_.at(input))) {
     engine_data_.AdjustStats(*attacking);
     engine_data_.AdjustStats(*defending);
-    defending->current_hp_ = std::max(0, defending->current_hp_ -= engine_data_.CalculateDamageDealt(
-        *attacking, attacking->moves_.at(input), *defending));
+    size_t damage = engine_data_.CalculateDamageDealt(
+        *attacking, attacking->moves_.at(input), *defending);
+    std::cout << "The attack did " + std::to_string(damage) + " damage!" << std::endl;
+    defending->current_hp_ = std::max(0, defending->current_hp_ -= damage);
+    if (defending->current_hp_ <= 0) {
+      std::cout << defending->species_name_ << " fainted!" << std::endl;
+    }
     engine_data_.CheckIfGameOver();
-    std::cout << "Move executed" << std::endl;
     if (engine_data_.GetIsGameOver()) {
       EndGame();
       return;
@@ -136,19 +142,23 @@ void pokemon_interface::PokemonEngineInterface::RunFullTurn(size_t user_move_ind
   pokemon_species::Species* cpu_current_pokemon =
       engine_data_.GetComputerPlayer().GetCurrentlyInBattle();
   if (engine_data_.HumanGoesFirst(user_move, cpu_move)) {
+    std::cout << user_current_pokemon->species_name_ << " used " << user_move.name_ << std::endl;
     ExecuteMove(user_move_index, engine_data_.GetHumanPlayer().GetCurrentlyInBattle(),
                 engine_data_.GetComputerPlayer().GetCurrentlyInBattle());
     if (engine_data_.GetComputerPlayer().GetCurrentlyInBattle()->current_hp_ > 0 &&
         engine_data_.GetComputerPlayer().GetCurrentlyInBattle() == cpu_current_pokemon) {
+      std::cout << cpu_current_pokemon->species_name_ << " used " << cpu_move.name_ << std::endl;
       ExecuteMove(cpu_move_index, engine_data_.GetComputerPlayer().GetCurrentlyInBattle(),
                   engine_data_.GetHumanPlayer().GetCurrentlyInBattle());
     }
     engine_data_.GetComputerPlayer().DetermineCurrentlyInBattle();
   } else {
+    std::cout << cpu_current_pokemon->species_name_ << " used " << cpu_move.name_ << std::endl;
     ExecuteMove(cpu_move_index, engine_data_.GetComputerPlayer().GetCurrentlyInBattle(),
                 engine_data_.GetHumanPlayer().GetCurrentlyInBattle());
     if (engine_data_.GetHumanPlayer().GetCurrentlyInBattle()->current_hp_ > 0 &&
         engine_data_.GetHumanPlayer().GetCurrentlyInBattle() == user_current_pokemon) {
+      std::cout << user_current_pokemon->species_name_ << " used " << user_move.name_ << std::endl;
       ExecuteMove(user_move_index, engine_data_.GetHumanPlayer().GetCurrentlyInBattle(),
                   engine_data_.GetComputerPlayer().GetCurrentlyInBattle());
     }

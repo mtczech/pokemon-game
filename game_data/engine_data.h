@@ -62,7 +62,7 @@ class EngineData {
    * It reverses all the changes made by AdjustStats
    */
 
-  void SetStatsBack(pokemon_species::Species pokemon);
+  void SetStatsBack(pokemon_species::Species& pokemon);
 
   /**
    * Function that returns an array of Pokemon with loaded movesets given an array of numbers

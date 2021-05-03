@@ -156,34 +156,34 @@ bool EngineData::CheckIfMoveHits(pokemon_species::Species& attacking, const poke
   size_t ailment_chance = rand() % kProbability;
   size_t paralysis_chance = 1;
   if (ailment_chance < paralysis_chance && attacking.ailment_ == "paralysis") {
-    message_ = attacking.species_name_ + " is fully paralyzed!";
+    std::cout << attacking.species_name_ << " was fully paralyzed!";
     return false;
   }
   size_t confusion_chance = 1;
   if (ailment_chance < confusion_chance && attacking.ailment_ == "confusion") {
-    message_ = attacking.species_name_ + " is confused and hurt itself!";
+    std::cout << attacking.species_name_ << " is confused and hurt itself!" << std::endl;
     attacking.current_hp_ = std::max(0, attacking.current_hp_ - 40);
     return false;
   }
   size_t sleep_chance = 2;
   if (ailment_chance < sleep_chance && attacking.ailment_ == "sleep") {
-    message_ = attacking.species_name_ + " is fast asleep.";
+    std::cout << attacking.species_name_ << " is fast asleep." << std::endl;
     return false;
   } else if (attacking.ailment_ == "sleep") {
-    message_ = attacking.species_name_ + " woke up!";
+    std::cout << attacking.species_name_ << " woke up!" << std::endl;
     attacking.ailment_ = "none";
   }
   size_t freeze_chance = 3;
   if (ailment_chance < freeze_chance && attacking.ailment_ == "freeze") {
-    message_ = attacking.species_name_ + " is frozen solid!";
+    std::cout << attacking.species_name_ << " is frozen solid!" << std::endl;
     return false;
   } else if (attacking.ailment_ == "freeze") {
-    message_ = attacking.species_name_ + " thawed out!";
+    std::cout << attacking.species_name_ << " thawed out!" << std::endl;
     attacking.ailment_ = "none";
   }
   size_t miss_chance = rand() % 100;
   if (move.accuracy_ <= miss_chance) {
-    message_ = attacking.species_name_ + "'s attack missed!";
+    std::cout << attacking.species_name_ << "'s attack missed!" << std::endl;
     return false;
   }
   return true;
@@ -215,7 +215,7 @@ void EngineData::AdjustStats(pokemon_species::Species& pokemon) {
   }
 }
 
-void EngineData::SetStatsBack(pokemon_species::Species pokemon) {
+void EngineData::SetStatsBack(pokemon_species::Species& pokemon) {
   if (pokemon.ailment_ == "burn") {
     pokemon.other_stats_.at("attack") = size_t
         (std::floorf(float (pokemon.other_stats_.at("attack")) * 2));
@@ -256,7 +256,15 @@ size_t EngineData::CalculateDamageDealt(pokemon_species::Species attacking,
   float rng_multiplier = float (unsigned (rand() % 16) + 85) / float (100);
   float final_damage = base_damage * rng_multiplier;
   final_damage *= GetStab(attacking, attack);
-  final_damage *= GetTypeMultiplier(defending, attack);
+  float type_multiplier = GetTypeMultiplier(defending, attack);
+  if (type_multiplier > 1) {
+    std::cout << "It's super effective!" << std::endl;
+  } else if (type_multiplier == 0) {
+    std::cout << "It doesn't affect " + defending.species_name_ << std::endl;
+  } else if (type_multiplier < 1) {
+    std::cout << "It's not very effective..." << std::endl;
+  }
+  final_damage *= type_multiplier;
   size_t recoil = unsigned (std::floor((final_damage * attack.drain_) / 100));
   attacking.current_hp_ += std::max(0, attacking.current_hp_ += recoil);
   return size_t (std::ceilf(final_damage));
@@ -293,10 +301,10 @@ void EngineData::AddEffects(pokemon_species::Species& attacking,
   if (move.category_name_ == "field-effect"
       && attacking.species_name_ == human_player.GetCurrentlyInBattle()->species_name_) {
     computer_player.SetRocks();
-    message_ = "Rocks are ready to dig into opposing Pokemon!";
+    std::cout << "Rocks are ready to dig into opposing Pokemon!" << std::endl;
   } else if (move.category_name_ == "field-effect") {
     human_player.SetRocks();
-    message_ = "Rocks are ready to dig into your Pokemon!";
+    std::cout << "Rocks are ready to dig into your Pokemon!" << std::endl;
   }
   if (move.category_name_ == "damage+raise" || move.category_name_ == "net-good-stats") {
     for (size_t i = 0; i < move.stat_.size(); i++) {
@@ -305,36 +313,43 @@ void EngineData::AddEffects(pokemon_species::Species& attacking,
   }
   if (defending.ailment_ == "none" && move.category_name_ == "ailment") {
     defending.ailment_ = move.ailment_name_;
+    std::cout << defending.species_name_ << " now has " << defending.ailment_ << std::endl;
   }
   if (move.category_name_ == "damage+ailment" && defending.ailment_ == "none") {
     if (CheckChance(move.ailment_chance_)) {
       defending.ailment_ = move.ailment_name_;
+      std::cout << defending.species_name_ << " now has " << defending.ailment_ << std::endl;
     }
   }
   if (move.category_name_ == "unique") {
     human_player.RemoveRocks();
     computer_player.RemoveRocks();
-    message_ = "Both sides no longer have rocks";
+    std::cout << "Both sides no longer have rocks" << std::endl;
   }
   if (move.category_name_ == "damage+lower" && CheckChance(move.stat_chance_)) {
     for (size_t i = 0; i < move.stat_.size(); i++) {
       defending.stat_changes_.at(move.stat_.at(i)) += move.change_.at(i);
+      std::cout << defending.species_name_ << "'s " << move.stat_.at(i) << " changed by " <<
+      std::to_string(move.change_.at(i)) << std::endl;
     }
   }
   if (move.category_name_ == "heal") {
-    size_t hp_after_healing = attacking.current_hp_ += ((attacking.hp_ * move.healing_) / 100);
+    size_t hp_points_gained = ((attacking.hp_ * move.healing_) / 100);
+    size_t hp_after_healing = attacking.current_hp_ += hp_points_gained;
     attacking.current_hp_ = std::min(attacking.hp_, hp_after_healing);
+    std::cout << attacking.species_name_ << " gained " << std::to_string(hp_points_gained) <<
+    " points of hp back!" << std::endl;
   }
 }
 
 void EngineData::CheckIfGameOver() {
   if (human_player.GetReadyPokemon().size() == 0 &&
       human_player.GetCurrentlyInBattle()->current_hp_ <= 0) {
-    message_ = "Game over, better luck next time";
+    std::cout << "Game over, better luck next time" << std::endl;
     is_game_over_ = true;
   } else if (computer_player.GetReadyPokemon().size() == 0 &&
              computer_player.GetCurrentlyInBattle()->current_hp_ == 0) {
-    message_ = "Congratulations! You are the Pokemon League Champion!";
+    std::cout << "Congratulations! You are the Pokemon League Champion!" << std::endl;
     is_game_over_ = true;
   }
 }
@@ -380,8 +395,10 @@ void EngineData::DealStealthRockDamage(pokemon_species::Species& damage_recipien
       damage_multiplier *= type_matrix_.at("rock").at(type);
     }
   }
-  int hp_after_damage = damage_recipient.current_hp_ -
-                        int (std::ceil(float (damage_recipient.hp_) * damage_multiplier));
+  int damage_dealt = int (std::ceil(float (damage_recipient.hp_) * damage_multiplier));
+  std::cout << damage_recipient.species_name_ << " took " << std::to_string(damage_dealt) <<
+      " damage from Stealth Rock!" << std::endl;
+  int hp_after_damage = damage_recipient.current_hp_ - damage_dealt;
   damage_recipient.current_hp_ = std::max(0, hp_after_damage);
   human_player.CheckIfPokemonFainted();
   computer_player.CheckIfPokemonFainted();
