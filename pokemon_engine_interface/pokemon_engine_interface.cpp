@@ -25,7 +25,11 @@ void pokemon_interface::PokemonEngineInterface::draw() {
 }
 
 void pokemon_interface::PokemonEngineInterface::update() {
-
+  message_ = "";
+  for (size_t i = 0; i < engine_data_.GetHumanPlayer().GetCurrentlyInBattle()->moves_.size(); i++) {
+    message_ += "Press " + std::to_string(i) + " to use " +
+                engine_data_.GetHumanPlayer().GetCurrentlyInBattle()->moves_.at(i).name_ + "\n";
+  }
 }
 
 void pokemon_interface::PokemonEngineInterface::DrawPokemon(
@@ -36,19 +40,29 @@ void pokemon_interface::PokemonEngineInterface::DrawPokemon(
 }
 
 void pokemon_interface::PokemonEngineInterface::keyDown(ci::app::KeyEvent event) {
+  size_t computer_move_index = engine_data_.FindBestComputerMove();
+
   switch (event.getChar()) {
-    case '0':;
-      ExecuteMove(0, engine_data_.GetHumanPlayer().GetCurrentlyInBattle(),
-                  engine_data_.GetComputerPlayer().GetCurrentlyInBattle());
-      engine_data_.GetComputerPlayer().DetermineCurrentlyInBattle();
-      update();
+    case '0':
+      RunFullTurn(0, computer_move_index);
+      break;
+    case '1':
+      RunFullTurn(1, computer_move_index);
+      break;
+    case '2':
+      RunFullTurn(2, computer_move_index);
+      break;
+    case '3':
+      RunFullTurn(3, computer_move_index);
+      break;
   }
+  update();
 }
 
 void pokemon_interface::PokemonEngineInterface::DrawPokemonHealth(
     pokemon_species::Species creature, ci::vec2 position) {
-  ci::Color hp_color;
   ci::gl::drawSolidRect(ci::Rectf(position, ci::vec2(position.x + 325, position.y + 80)));
+  ci::Color hp_color;
   if (float ((creature.current_hp_) / float (creature.hp_)) < 0.2) {
     hp_color = ci::Color("red");
   } else if (float ((creature.current_hp_) / float (creature.hp_)) < 0.5) {
@@ -81,6 +95,7 @@ void pokemon_interface::PokemonEngineInterface::ExecuteMove(
         *attacking, attacking->moves_.at(input), *defending));
     engine_data_.CheckIfGameOver();
     if (engine_data_.GetIsGameOver()) {
+      EndGame();
       return;
     }
     engine_data_.SetStatsBack(*attacking);
@@ -97,5 +112,35 @@ void pokemon_interface::PokemonEngineInterface::ExecuteMove(
 void pokemon_interface::PokemonEngineInterface::EndGame() {
   for (pokemon_species::Species* s : engine_data_.GetAllPokemonList()) {
     delete s;
+  }
+}
+
+void pokemon_interface::PokemonEngineInterface::RunFullTurn(size_t user_move_index, size_t cpu_move_index) {
+  pokemon_move::Move user_move =
+      engine_data_.GetHumanPlayer().GetCurrentlyInBattle()->moves_.at(user_move_index);
+  pokemon_move::Move cpu_move =
+      engine_data_.GetComputerPlayer().GetCurrentlyInBattle()->moves_.at(cpu_move_index);
+  pokemon_species::Species* user_current_pokemon =
+      engine_data_.GetHumanPlayer().GetCurrentlyInBattle();
+  pokemon_species::Species* cpu_current_pokemon =
+      engine_data_.GetComputerPlayer().GetCurrentlyInBattle();
+  if (engine_data_.HumanGoesFirst(user_move, cpu_move)) {
+    ExecuteMove(user_move_index, engine_data_.GetHumanPlayer().GetCurrentlyInBattle(),
+                engine_data_.GetComputerPlayer().GetCurrentlyInBattle());
+    if (engine_data_.GetComputerPlayer().GetCurrentlyInBattle()->current_hp_ > 0 &&
+        engine_data_.GetComputerPlayer().GetCurrentlyInBattle() == cpu_current_pokemon) {
+      ExecuteMove(cpu_move_index, engine_data_.GetComputerPlayer().GetCurrentlyInBattle(),
+                  engine_data_.GetHumanPlayer().GetCurrentlyInBattle());
+    }
+    engine_data_.GetComputerPlayer().DetermineCurrentlyInBattle();
+  } else {
+    ExecuteMove(cpu_move_index, engine_data_.GetComputerPlayer().GetCurrentlyInBattle(),
+                engine_data_.GetHumanPlayer().GetCurrentlyInBattle());
+    if (engine_data_.GetHumanPlayer().GetCurrentlyInBattle()->current_hp_ > 0 &&
+        engine_data_.GetHumanPlayer().GetCurrentlyInBattle() == user_current_pokemon) {
+      ExecuteMove(user_move_index, engine_data_.GetHumanPlayer().GetCurrentlyInBattle(),
+                  engine_data_.GetComputerPlayer().GetCurrentlyInBattle());
+    }
+    engine_data_.GetComputerPlayer().DetermineCurrentlyInBattle();
   }
 }

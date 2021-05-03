@@ -49,6 +49,8 @@ class PokemonEngineInterface : public ci::app::App {
 
   void PokemonEngineInterface::EndGame();
 
+  void PokemonEngineInterface::RunFullTurn(size_t user_move_index, size_t cpu_move_index);
+
  private:
   EngineData engine_data_;
 

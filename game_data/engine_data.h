@@ -55,7 +55,7 @@ class EngineData {
    * @param pokemon the pokemon having its stats adjusted
    */
 
-  void AdjustStats(pokemon_species::Species pokemon);
+  void AdjustStats(pokemon_species::Species& pokemon);
 
   /**
    * Does the opposite of AdjustStats so that AdjustStats is not applied more than once

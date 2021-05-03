@@ -189,7 +189,7 @@ bool EngineData::CheckIfMoveHits(pokemon_species::Species& attacking, const poke
   return true;
 }
 
-void EngineData::AdjustStats(pokemon_species::Species pokemon) {
+void EngineData::AdjustStats(pokemon_species::Species& pokemon) {
   if (pokemon.ailment_ == "burn") {
     pokemon.other_stats_.at("attack") = size_t
         (std::floorf(float (pokemon.other_stats_.at("attack")) * float (0.5)));
