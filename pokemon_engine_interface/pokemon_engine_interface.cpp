@@ -28,12 +28,18 @@ void pokemon_interface::PokemonEngineInterface::update() {
   message_ = "";
   for (size_t i = 0; i < engine_data_.GetHumanPlayer().GetCurrentlyInBattle()->moves_.size(); i++) {
     message_ += "Press " + std::to_string(i) + " to use " +
-                engine_data_.GetHumanPlayer().GetCurrentlyInBattle()->moves_.at(i).name_ + "\n";
+                engine_data_.GetHumanPlayer().GetCurrentlyInBattle()->moves_.at(i).name_ + " ";
+    if (i % 2 == 1) {
+      message_ += "\n";
+    }
   }
 }
 
 void pokemon_interface::PokemonEngineInterface::DrawPokemon(
     pokemon_species::Species creature, ci::Area area) {
+  ci::gl::color(ci::Color("black"));
+  ci::gl::drawSolidRect(ci::Rectf(area));
+  ci::gl::color(ci::Color("white"));
   auto starting_image = ci::loadImage(ci::loadUrl(creature.front_sprite_));
   ci::gl::Texture2dRef starting_pokemon_image = ci::gl::Texture2d::create(starting_image);
   ci::gl::draw(starting_pokemon_image, area);
@@ -41,7 +47,6 @@ void pokemon_interface::PokemonEngineInterface::DrawPokemon(
 
 void pokemon_interface::PokemonEngineInterface::keyDown(ci::app::KeyEvent event) {
   size_t computer_move_index = engine_data_.FindBestComputerMove();
-
   switch (event.getChar()) {
     case '0':
       RunFullTurn(0, computer_move_index);
@@ -61,7 +66,9 @@ void pokemon_interface::PokemonEngineInterface::keyDown(ci::app::KeyEvent event)
 
 void pokemon_interface::PokemonEngineInterface::DrawPokemonHealth(
     pokemon_species::Species creature, ci::vec2 position) {
+  ci::gl::color(ci::Color("black"));
   ci::gl::drawSolidRect(ci::Rectf(position, ci::vec2(position.x + 325, position.y + 80)));
+  ci::gl::color(ci::Color("white"));
   ci::Color hp_color;
   if (float ((creature.current_hp_) / float (creature.hp_)) < 0.2) {
     hp_color = ci::Color("red");
@@ -76,6 +83,9 @@ void pokemon_interface::PokemonEngineInterface::DrawPokemonHealth(
 
 void pokemon_interface::PokemonEngineInterface::WritePokemonNames(
     std::vector<pokemon_species::Species*> creatures, ci::vec2 position) {
+  ci::gl::color(ci::Color("black"));
+  ci::gl::drawSolidRect(ci::Rectf(position, ci::vec2(position.x + 200, position.y + 90)));
+  ci::gl::color(ci::Color("white"));
   std::string message = "Pokemon remaining: \n";
   for (pokemon_species::Species* creature : creatures) {
     message += creature->species_name_ + "\n";
@@ -94,6 +104,7 @@ void pokemon_interface::PokemonEngineInterface::ExecuteMove(
     defending->current_hp_ = std::max(0, defending->current_hp_ -= engine_data_.CalculateDamageDealt(
         *attacking, attacking->moves_.at(input), *defending));
     engine_data_.CheckIfGameOver();
+    std::cout << "Move executed" << std::endl;
     if (engine_data_.GetIsGameOver()) {
       EndGame();
       return;
