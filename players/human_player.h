@@ -25,11 +25,13 @@ class HumanPlayer {
 
   void HumanPlayer::SendOutFirstPokemon(size_t starting_pokemon_index);
 
-  std::vector<pokemon_species::Species*> HumanPlayer::GetReadyPokemon();
+  std::vector<pokemon_species::Species*>& HumanPlayer::GetReadyPokemon();
 
   pokemon_species::Species* HumanPlayer::GetCurrentlyInBattle();
 
   std::vector<pokemon_species::Species*> HumanPlayer::GetFaintedPokemon();
+
+  void HumanPlayer::SetCurrentlyInBattle(pokemon_species::Species* pokemon);
 
   /**
    * Sets up stealth rock

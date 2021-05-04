@@ -53,15 +53,18 @@ EngineData::EngineData(std::string move_json_path, std::string species_json_path
   }
   //Randomly selects 10 out of the 15 pokemon, assigns 5 to the player and 5 to the computer
   std::vector<size_t> chosen_numbers;
-  while (chosen_numbers.size() < 10) {
-    size_t pokemon_index = (rand() % 15);
+  size_t number_of_pokemon = std::min(size_t (10), size_t (all_pokemon_list.size()));
+  while (chosen_numbers.size() < number_of_pokemon) {
+    size_t pokemon_index = (rand() % all_pokemon_list.size());
     if (std::count(chosen_numbers.begin(), chosen_numbers.end(), pokemon_index) == 0) {
       chosen_numbers.push_back(pokemon_index);
     }
   }
+  human_player = HumanPlayer();
+  computer_player = ComputerPlayer();
   //Code here from https://stackoverflow.com/questions/9811235/
   // best-way-to-split-a-vector-into-two-smaller-arrays
-  size_t const team_size = chosen_numbers.size() / 2;
+  size_t team_size = size_t (chosen_numbers.size() / 2);
   std::vector<size_t> human_team(chosen_numbers.begin(), chosen_numbers.begin() + team_size);
   std::vector<size_t> computer_team(chosen_numbers.begin() + team_size, chosen_numbers.end());
   human_player.SetPokemonTeam(CreatePokemonTeam(human_team));
@@ -70,7 +73,6 @@ EngineData::EngineData(std::string move_json_path, std::string species_json_path
   SetUpTypeMatrix();
   human_player.SendOutFirstPokemon(FindLeadIndex(human_player.GetReadyPokemon()));
   computer_player.SendOutFirstPokemon(FindLeadIndex((computer_player.GetReadyPokemon())));
-  std::cout << "test" << std::endl;
 }
 
 //n^4 complexity, glad my input sets are relatively small
@@ -144,7 +146,7 @@ size_t EngineData::FindLeadIndex(std::vector<pokemon_species::Species*> v) {
       }
     }
   }
-  return (rand() % 5);
+  return (rand() % v.size());
 }
 
 std::string EngineData::GetMessage() {
@@ -241,6 +243,7 @@ void EngineData::SetStatsBack(pokemon_species::Species& pokemon) {
 
 size_t EngineData::CalculateDamageDealt(pokemon_species::Species attacking,
          pokemon_move::Move attack, pokemon_species::Species defending) {
+  srand(unsigned (time(0)));
   float stats_multiplier;
   if (attack.damage_class_name_ == "physical") {
     stats_multiplier = float (attacking.other_stats_.at("attack")) /
@@ -265,9 +268,20 @@ size_t EngineData::CalculateDamageDealt(pokemon_species::Species attacking,
     std::cout << "It's not very effective..." << std::endl;
   }
   final_damage *= type_multiplier;
-  size_t recoil = unsigned (std::floor((final_damage * attack.drain_) / 100));
-  attacking.current_hp_ += std::max(0, attacking.current_hp_ += recoil);
-  return size_t (std::ceilf(final_damage));
+  if (attack.max_hits_ != 1) {
+    int r = (rand() % (attack.max_hits_ - attack.min_hits_)) + attack.min_hits_;
+    final_damage *= r;
+  }
+  float recoil = (std::floor(std::min( float ((final_damage * attack.drain_) / 100), float ((defending.current_hp_ * attack.drain_) / 100))));
+  if (recoil != 0) {
+    std::cout << attacking.species_name_ << " took " << std::floor(-recoil) <<
+        " points of recoil damage!";
+  }
+  attacking.current_hp_ += std::max(0, attacking.current_hp_ += int (std::floor(recoil)));
+  if (attack.name_ == "explosion") {
+    attacking.current_hp_ = 0;
+  }
+  return size_t (std::ceil(final_damage));
 }
 
 float EngineData::GetStab(pokemon_species::Species attacking, pokemon_move::Move attack) {
@@ -373,9 +387,9 @@ size_t EngineData::FindBestComputerMove() {
   size_t best_move_index = 0;
   size_t damage_dealt_by_best_move = 0;
   for (size_t i = 0; i < computer_player.GetCurrentlyInBattle()->moves_.size(); i++) {
-    size_t damage = CalculateDamageDealt(*(computer_player.GetCurrentlyInBattle()),
+    size_t damage = CalculateDamageDealt(*computer_player.GetCurrentlyInBattle(),
           computer_player.GetCurrentlyInBattle()->moves_.at(i),
-                                         (*human_player.GetCurrentlyInBattle()));
+                                         *human_player.GetCurrentlyInBattle());
     if (damage >= damage_dealt_by_best_move) {
       best_move_index = i;
       damage_dealt_by_best_move = damage;
@@ -402,4 +416,22 @@ void EngineData::DealStealthRockDamage(pokemon_species::Species& damage_recipien
   damage_recipient.current_hp_ = std::max(0, hp_after_damage);
   human_player.CheckIfPokemonFainted();
   computer_player.CheckIfPokemonFainted();
+}
+
+void EngineData::ApplyMiscEffects(pokemon_species::Species* attacking, pokemon_move::Move move) {
+  if (move.name_ == "explosion") {
+    attacking->current_hp_ = 0;
+  }
+  bool is_switch_move = move.name_ == "flip-turn" || move.name_ == "u-turn"
+                        || move.name_ == "volt-switch";
+  if (is_switch_move && attacking == human_player.GetCurrentlyInBattle() &&
+      !human_player.GetReadyPokemon().empty()) {
+    human_player.SwitchPokemon(0);
+  } else if (is_switch_move && !computer_player.GetReadyPokemon().empty() &&
+             attacking == computer_player.GetCurrentlyInBattle()) {
+    pokemon_species::Species* placeholder = computer_player.GetCurrentlyInBattle();
+    computer_player.SetCurrentlyInBattle(nullptr);
+    computer_player.SendOutFirstPokemon(0);
+    computer_player.GetReadyPokemon().push_back(placeholder);
+  }
 }

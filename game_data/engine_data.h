@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef FINAL_PROJECT_MTCZECH_ENGINE_DATA_H
 #define FINAL_PROJECT_MTCZECH_ENGINE_DATA_H
 
@@ -134,6 +136,8 @@ class EngineData {
   size_t EngineData::FindBestComputerMove();
 
   bool EngineData::GetIsGameOver();
+
+  void EngineData::ApplyMiscEffects(pokemon_species::Species* attacking, pokemon_move::Move move);
 
   /**
    * Function for determining how much damage Stealth Rock deals and dealing said damage

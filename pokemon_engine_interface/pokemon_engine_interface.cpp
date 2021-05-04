@@ -13,6 +13,10 @@ pokemon_interface::PokemonEngineInterface::PokemonEngineInterface() {
                             "C:\\Cinder\\cinder_0.9.2_vc2015\\cinder_0.9.2_vc2015\\my-projects\\final-project-mtczech\\necessary_json_data\\pokemon_sets_json.json");
 }
 
+pokemon_interface::PokemonEngineInterface::PokemonEngineInterface(EngineData data) {
+  engine_data_ = data;
+}
+
 void pokemon_interface::PokemonEngineInterface::draw() {
   ci::Color("white");
   ci::gl::drawSolidRect(ci::Rectf (ci::vec2(0, 0), ci::vec2(650, 100)));
@@ -39,7 +43,10 @@ void pokemon_interface::PokemonEngineInterface::update() {
        i < engine_data_.GetHumanPlayer().GetCurrentlyInBattle()->moves_.size() +
                engine_data_.GetHumanPlayer().GetReadyPokemon().size(); i++) {
     message_ += "Press " + std::to_string(i) + " to send in " +
-                engine_data_.GetHumanPlayer().GetReadyPokemon().at(i - 4)->species_name_;
+                engine_data_.GetHumanPlayer().GetReadyPokemon().at(i - 4)->species_name_ + " ";
+    if (i % 2 == 1) {
+      message_ += "\n";
+    }
   }
 }
 
@@ -159,6 +166,7 @@ void pokemon_interface::PokemonEngineInterface::ExecuteMove(
     engine_data_.SetStatsBack(*attacking);
     engine_data_.SetStatsBack(*defending);
     engine_data_.AddEffects(*attacking, *defending, attacking->moves_.at(input));
+    engine_data_.ApplyMiscEffects(attacking, attacking->moves_.at(input));
     engine_data_.GetHumanPlayer().CheckIfPokemonFainted();
   }
   update();
@@ -206,4 +214,12 @@ void pokemon_interface::PokemonEngineInterface::RunFullTurn(size_t user_move_ind
       engine_data_.DealStealthRockDamage(*engine_data_.GetComputerPlayer().GetCurrentlyInBattle());
     }
   }
+}
+
+void pokemon_interface::PokemonEngineInterface::SetEngineData(EngineData data) {
+  engine_data_ = data;
+}
+
+EngineData pokemon_interface::PokemonEngineInterface::GetEngineData() {
+  return engine_data_;
 }

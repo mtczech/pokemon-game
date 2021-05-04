@@ -24,7 +24,7 @@ void HumanPlayer::SendOutFirstPokemon(size_t starting_pokemon_index) {
   ready_pokemon_.erase(ready_pokemon_.begin() + starting_pokemon_index);
 }
 
-std::vector<pokemon_species::Species*> HumanPlayer::GetReadyPokemon() {
+std::vector<pokemon_species::Species*>& HumanPlayer::GetReadyPokemon() {
   return ready_pokemon_;
 }
 
@@ -75,4 +75,8 @@ void HumanPlayer::SwitchPokemon(size_t pokemon_index) {
   } else {
     std::cout << "You do not have that pokemon ready" << std::endl;
   }
+}
+
+void HumanPlayer::SetCurrentlyInBattle(pokemon_species::Species* pokemon) {
+  currently_in_battle_ = pokemon;
 }

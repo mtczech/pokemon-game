@@ -28,6 +28,8 @@ class PokemonEngineInterface : public ci::app::App {
  public:
   PokemonEngineInterface();
 
+  PokemonEngineInterface(EngineData data);
+
   void draw() override;
   void update() override;
   void keyDown(ci::app::KeyEvent event) override;
@@ -54,7 +56,13 @@ class PokemonEngineInterface : public ci::app::App {
 
   void PokemonEngineInterface::RunFullTurn(size_t user_move_index, size_t cpu_move_index);
 
+  void PokemonEngineInterface::SetEngineData(EngineData data);
+
+  EngineData PokemonEngineInterface::GetEngineData();
+
  private:
+  //Where all the data is stored, don't worry that
+
   EngineData engine_data_;
 
   //Area taken up by the image of the user pokemon
